@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Neuron:
     def __init__(self, weights: list[float], bias: float) -> None:
         self.weights = weights
