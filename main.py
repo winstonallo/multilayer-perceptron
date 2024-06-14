@@ -1,5 +1,8 @@
-from neural_network import forward_pass
+import matplotlib.pyplot as plt
 import numpy as np
+import nnfs
+from nnfs.datasets import spiral_data
+from neural_network import forward_pass
 
 inputs = [[1.0, 2.0, 3.0, 2.5], [2, 5, -1, 2], [-1.5, 2.7, 3.3, -0.8]]
 
