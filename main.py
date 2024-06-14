@@ -17,3 +17,9 @@ layers = forward_pass(inputs=np.array(inputs), weights=weights, biases=np.array(
 
 final_output = layers[-1].output()
 print(final_output)
+
+
+nnfs.init()
+x, y = spiral_data(samples=100, classes=3)
+plt.scatter(x[:, 0], x[:, 1])
+plt.show()
