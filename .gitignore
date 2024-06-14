@@ -1,0 +1,7 @@
+# ENVIRONMENT
+
+venv
+
+# CACHE
+
+*__pycache__
