@@ -40,3 +40,29 @@ def forward_pass(inputs: ndarray, weights: ndarray, biases: ndarray) -> list[Neu
         else:
             layers.append(NeuronLayer(weights=weights[i], inputs=layers[i - 1].output(), biases=biases[i]))
     return layers
+
+class DenseLayer:
+    # This class simplifies the creation of neuron layers by 
+    # randomly assigning weights on a Gaussian distribution,
+    # and setting bias to 0.
+
+    def __init__(self, n_inputs: int, n_neurons: int):
+        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)
+        self.biases = np.zeros((1, n_neurons))
+
+    def forward(self, inputs: ndarray) -> None:
+        self.output = np.dot(inputs, self.weights) + self.biases
+
+
+class ReluActivation:
+
+    def forward(self, inputs: ndarray) -> None:
+        self.output = np.maximum(0, inputs)
+
+
+class SoftmaxActivation:
+
+    def forward(self, inputs: ndarray) -> None:
+        exponential_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        probabilities = exponential_values / np.sum(exponential_values, axis=1, keepdims=True)
+        self.output = probabilities
