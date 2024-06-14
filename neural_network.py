@@ -12,15 +12,20 @@ class Neuron:
 
 class NeuronLayer:
 
-    def run(weights: list[list[float]], inputs: list[float], biases: list[float]) -> list[float]:
+    def __init__(self, weights: np.ndarray, inputs: np.ndarray, biases: np.ndarray):
+        self.weights = np.array(weights)
+        self.inputs = np.array(inputs)
+        self.biases = np.array(biases)
+
+    def run(self, weights: np.ndarray, inputs: np.ndarray, biases: np.ndarray) -> np.ndarray:
         # Get the outputs of the entire layer in one line using the dot product.
         # In this case, np.dot() multiplies the weights matrix (X x Y)
         # with the inputs vector (1 x X).
         # See the Neuron class.
         return np.dot(weights, inputs) + biases
-    
-    def batch(weights: list[list[float]], inputs: list[list[float]], biases: list[float]) -> list[list[float]]:
+
+    def output(self) -> np.ndarray:
         # This gets the layer outputs for a whole batch of inputs at a time.
         # Inputs and weights are both X x Y, therefore we must transpose the weights
         # in order to convert them into Y x X and make the dot product possible.
-        return np.dot(inputs, np.array(weights).T) + biases
+        return np.dot(self.inputs, self.weights.T) + self.biases
