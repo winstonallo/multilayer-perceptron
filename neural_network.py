@@ -1,15 +1,26 @@
-from neuron import Neuron
+import numpy as np
 
 
-class NeuralNetwork:
+class Neuron:
+    # The functionality of this class is abstracted away in NeuronLayer
+    # using the dot product of the weights and the inputs.
 
-    def __init__(self, weights: list[list[float]], biases: list[float]) -> None:
-        self.neurons = self.init_neurons(weights, biases)
+    def output(self, weights: list[float], inputs: list[float], bias: float) -> float:
+        # Summation of weighted inputs with added bias.
+        return np.dot(inputs, weights) + bias
 
-    def init_neurons(self, weights: list[list[float]], biases: list[float]):
-        # Create a list of Neuron objects, each with their own weights and biases.
-        return [Neuron(weight_list, bias) for weight_list, bias in zip(weights, biases)]
 
-    def run(self, inputs: list[float]) -> list[float]:
-        # Get the outputs of all neurons using the inputs passed as a parameter.
-        return [neuron.output(inputs) for neuron in self.neurons]
+class NeuronLayer:
+
+    def run(weights: list[list[float]], inputs: list[float], biases: list[float]) -> list[float]:
+        # Get the outputs of the entire layer in one line using the dot product.
+        # In this case, np.dot() multiplies the weights matrix (X x Y)
+        # with the inputs vector (1 x X).
+        # See the Neuron class.
+        return np.dot(weights, inputs) + biases
+    
+    def batch(weights: list[list[float]], inputs: list[list[float]], biases: list[float]) -> list[list[float]]:
+        # This gets the layer outputs for a whole batch of inputs at a time.
+        # Inputs and weights are both X x Y, therefore we must transpose the weights
+        # in order to convert them into Y x X and make the dot product possible.
+        return np.dot(inputs, np.array(weights).T) + biases

@@ -1,10 +1,10 @@
-from neural_network import NeuralNetwork
+from neural_network import NeuronLayer
+import numpy as np
 
-weights1 = [2, 0, 0]  # First neuron's weights
-weights2 = [2, 2, 0]  # Second neuron's weights
-weights3 = [2, 2, 2]  # Third neuron's weights
+weights = [[0.2, 0.8, -0.5, 1], [0.5, -0.91, 0.26, -0.5], [-0.26, -0.27, 0.17, 0.87]]
+inputs = [[1.0, 2.0, 3.0, 2.5], [2, 5, -1, 2], [-1.5, 2.7, 3.3, -0.8]]
+biases = [2.0, 3.0, 0.5]
 
-neural_network = NeuralNetwork(weights=[weights1, weights2, weights3], biases=[0, 0, 1])
 
-outputs = neural_network.run(inputs=[1.1, 2.2, 3.3])
-print(outputs)
+layer_outputs = NeuronLayer.batch(weights=weights, inputs=inputs, biases=biases)
+print(layer_outputs)
