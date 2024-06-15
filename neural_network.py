@@ -76,7 +76,7 @@ class CategoricalCrossEntropyLoss(Loss):
     # the relevant prediction - i.e the one matching the expected
     # output - as a precision indicator.
     # The negative logarithm crosses the y-axis at x = 1, which enables
-    # us to have the expected relationship between the confidence 
+    # us to have the expected relationship between the confidence
     # and the loss (higher confidence -> lower loss and vice versa).
 
     def forward(self, prediction: ndarray, true_value: ndarray):

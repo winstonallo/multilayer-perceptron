@@ -25,6 +25,7 @@ loss = loss_function.calculate(a2.output, y)
 print("loss", loss)
 
 import numpy as np
+
 predictions = np.argmax(a2.output, axis=1)
 if len(y.shape) == 2:
     y = np.argmax(y, axis=1)

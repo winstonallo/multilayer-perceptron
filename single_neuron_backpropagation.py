@@ -8,11 +8,14 @@ learning_rate = 0.001
 
 output = None
 
+
 def relu(x):
     return np.maximum(0, x)
 
+
 def relu_derivative(x):
     return np.where(x > 0, 1.0, 0.0)
+
 
 for iteration in range(360):
     linear_output = np.dot(weights, inputs) + bias
