@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import ndarray
 
+
 class Neuron:
     # The functionality of this class is abstracted away in NeuronLayer
     # using the dot product of the weights and the inputs.
@@ -13,7 +14,7 @@ class Neuron:
 class NeuronLayer:
 
     def __init__(self, weights: ndarray, inputs: ndarray, biases: ndarray):
-        self.weights = np.array(weights) 
+        self.weights = np.array(weights)
         self.inputs = np.array(inputs)
         self.biases = np.array(biases)
 
@@ -31,18 +32,8 @@ class NeuronLayer:
         return np.dot(self.inputs, self.weights.T) + self.biases
 
 
-def forward_pass(inputs: ndarray, weights: ndarray, biases: ndarray) -> list[NeuronLayer]:
-    passes = len(weights)
-    layers = []
-    for i in range(passes):
-        if i == 0:
-            layers.append(NeuronLayer(weights=weights[i], inputs=inputs, biases=biases[i]))
-        else:
-            layers.append(NeuronLayer(weights=weights[i], inputs=layers[i - 1].output(), biases=biases[i]))
-    return layers
-
 class DenseLayer:
-    # This class simplifies the creation of neuron layers by 
+    # This class simplifies the creation of neuron layers by
     # randomly assigning weights on a Gaussian distribution,
     # and setting bias to 0.
 
@@ -54,15 +45,28 @@ class DenseLayer:
         self.output = np.dot(inputs, self.weights) + self.biases
 
 
-class ReluActivation:
+class ReLuActivation:
+    # Implementation of the ReLu activation function, which captures
+    # non-linearity by setting negative values to 0.
+    #
+    # Formula: y = max(0, x)
 
     def forward(self, inputs: ndarray) -> None:
         self.output = np.maximum(0, inputs)
 
 
-class SoftmaxActivation:
+class SoftMaxActivation:
+    # Implementation of the SoftMax activation function, which is used
+    # in the output layer of a neural network to produce probabilities
+    # by ensuring each output is in a (0, 1) range and the sum
+    # of all outputs equals to 0.
+    #
+    # Formula: e^x / sum(e^x)
 
     def forward(self, inputs: ndarray) -> None:
+        # We take the maximum value by row (axis=1) and subtract
+        # it from the exponential values in order to prevent them
+        # from becoming too big.
         exponential_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
         probabilities = exponential_values / np.sum(exponential_values, axis=1, keepdims=True)
         self.output = probabilities

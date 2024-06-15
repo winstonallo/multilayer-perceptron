@@ -1,15 +1,15 @@
 import matplotlib.pyplot as plt
 import nnfs
 from nnfs.datasets import spiral_data
-from neural_network import DenseLayer, ReluActivation, SoftmaxActivation
+from neural_network import DenseLayer, ReLuActivation, SoftMaxActivation
 
 nnfs.init()
 x, y = spiral_data(samples=100, classes=3)
 
 l1 = DenseLayer(2, 3)
-a1 = ReluActivation()
+a1 = ReLuActivation()
 l2 = DenseLayer(3, 3)
-a2 = SoftmaxActivation()
+a2 = SoftMaxActivation()
 
 l1.forward(x)
 a1.forward(l1.output)
