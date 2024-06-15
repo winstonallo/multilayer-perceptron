@@ -64,9 +64,18 @@ class SoftMaxActivation:
     # Formula: e^x / sum(e^x)
 
     def forward(self, inputs: ndarray) -> None:
-        # We take the maximum value by row (axis=1) and subtract
-        # it from the exponential values in order to prevent them
-        # from becoming too big.
+        # For each row, we subtract its highest value from all others before
+        # taking the exponents. This prevents the exponents from getting
+        # too big.
+        # We use keepdims=True in order to keep the dimensions of the original array.
+        # This is VERY important, as mismatched dimensions lead to unrelated values
+        # being subtracted from the rows.
         exponential_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+
+        # After getting the exponent for each normalized value, we divide each of them
+        # by the sum of all others in their respective row.
+        #
+        # Example, for this array: [x y z]
+        # x = e^x / e^x + e^y + e^z
         probabilities = exponential_values / np.sum(exponential_values, axis=1, keepdims=True)
         self.output = probabilities
