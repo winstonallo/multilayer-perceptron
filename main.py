@@ -3,40 +3,30 @@ import nnfs
 from nnfs.datasets import spiral_data
 from neural_network import DenseLayer, ReLUActivation, SoftmaxActivation, CategoricalCrossEntropyLoss
 
-# nnfs.init()
-# x, y = spiral_data(samples=100, classes=3)
+nnfs.init()
+x, y = spiral_data(samples=100, classes=3)
 
-# l1 = DenseLayer(2, 3)
-# a1 = ReLUActivation()
-# l2 = DenseLayer(3, 3)
-# a2 = SoftmaxActivation()
+l1 = DenseLayer(2, 3)
+a1 = ReLUActivation()
+l2 = DenseLayer(3, 3)
+a2 = SoftmaxActivation()
+loss_function = CategoricalCrossEntropyLoss()
 
-# l1.forward(x)
-# a1.forward(l1.output)
+l1.forward(x)
+a1.forward(l1.output)
 
-# l2.forward(a1.output)
-# a2.forward(l2.output)
+l2.forward(a1.output)
+a2.forward(l2.output)
 
-# print(a2.output[:5])
+print(a2.output[:5])
+
+loss = loss_function.calculate(a2.output, y)
+
+print("loss", loss)
 
 import numpy as np
-
-one_hot_encoding = np.array(
-    [
-        [1, 0, 0],
-        [0, 1, 0],
-        [0, 1, 0],
-    ]
-)
-
-predictions = np.array(
-    [
-        [0.7, 0.1, 0.2],
-        [0.1, 0.5, 0.4],
-        [0.02, 0.9, 0.08],
-    ]
-)
-
-loss_function = CategoricalCrossEntropyLoss()
-loss = loss_function.calculate(predictions, one_hot_encoding)
-print(loss)
+predictions = np.argmax(a2.output, axis=1)
+if len(y.shape) == 2:
+    y = np.argmax(y, axis=1)
+accuracy = np.mean(predictions == y)
+print("accuracy:", accuracy)

@@ -64,6 +64,7 @@ class Loss:
     # Base class for losses. Gets the array of losses from the forward()
     # method implemented in the child and returns its mean, which will be our
     # final value.
+
     def calculate(self, output, y):
         sample_losses = self.forward(output, y)
         loss = np.mean(sample_losses)
@@ -71,6 +72,13 @@ class Loss:
 
 
 class CategoricalCrossEntropyLoss(Loss):
+    # Categorical Cross Entropy loss takes the negative logarithm of
+    # the relevant prediction - i.e the one matching the expected
+    # output - as a precision indicator.
+    # The negative logarithm crosses the y-axis at x = 1, which enables
+    # us to have the expected relationship between the confidence 
+    # and the loss (higher confidence -> lower loss and vice versa).
+
     def forward(self, prediction: ndarray, true_value: ndarray):
         # Number of samples in the batch.
         samples = len(prediction)
