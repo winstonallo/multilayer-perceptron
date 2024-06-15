@@ -45,7 +45,7 @@ class DenseLayer:
         self.output = np.dot(inputs, self.weights) + self.biases
 
 
-class ReLuActivation:
+class ReLUActivation:
     # Implementation of the ReLu activation function, which captures
     # non-linearity by setting negative values to 0.
     #
@@ -55,8 +55,8 @@ class ReLuActivation:
         self.output = np.maximum(0, inputs)
 
 
-class SoftMaxActivation:
-    # Implementation of the SoftMax activation function, which is used
+class SoftmaxActivation:
+    # Implementation of the Softmax activation function, which is used
     # in the output layer of a neural network to produce probabilities
     # by ensuring each output is in a (0, 1) range and the sum
     # of all outputs equals to 0.
@@ -79,3 +79,46 @@ class SoftMaxActivation:
         # x = e^x / e^x + e^y + e^z
         probabilities = exponential_values / np.sum(exponential_values, axis=1, keepdims=True)
         self.output = probabilities
+
+
+class Loss:
+    # Base class for losses. Gets the array of losses from the forward()
+    # method implemented in the child and returns its mean, which will be our 
+    # final value.
+    def calculate(self, output, y):
+        sample_losses = self.forward(output, y)
+        loss = np.mean(sample_losses)
+        return loss
+
+
+class CategoricalCrossEntropyLoss(Loss):
+    def forward(self, prediction: ndarray, true_value: ndarray):
+        # Number of samples in the batch.
+        samples = len(prediction)
+
+        # Clip data to prevent division by zero and perfect outputs
+        # (1), which are not good for gradients.
+        clipped_prediction = np.clip(prediction, 1e-7, 1 - 1e-7)
+
+        if len(true_value.shape) == 1:
+            # If this is true, the true values are just a 1D array,
+            # for example: [0, 1, 1] ([RED, GREEN, BLUE]).
+            # These numbers stand for the indexes of the true value in
+            # each row of the prediction. Therefore, we use python's
+            # smart indexing in order to choose which indices of the
+            # predictions are to be taken into account.
+            confidence = clipped_prediction[range(samples), true_value]
+
+        elif len(true_value.shape) == 2:
+            # If this is true, the true values are a one hot encoded array.
+            # Multiplying the one hot encoded array with the predictions
+            # will zero out the false predictions, thus ignoring them
+            # in loss calculation.
+            confidence = np.sum(clipped_prediction * true_value, axis=1)
+        
+        negative_log_likelihoods = -np.log(confidence)
+        # The return array consists of the negative logs of the confidence
+        # for all correct predictions. This is what we will take the mean
+        # of to calculate the final loss.
+
+        return negative_log_likelihoods
