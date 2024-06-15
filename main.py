@@ -1,23 +1,23 @@
 import matplotlib.pyplot as plt
 import nnfs
 from nnfs.datasets import spiral_data
-from neural_network import DenseLayer, ReLUActivation, SoftmaxActivation
+from neural_network import DenseLayer, ReLUActivation, SoftmaxActivation, CategoricalCrossEntropyLoss
 
-nnfs.init()
-x, y = spiral_data(samples=100, classes=3)
+# nnfs.init()
+# x, y = spiral_data(samples=100, classes=3)
 
-l1 = DenseLayer(2, 3)
-a1 = ReLUActivation()
-l2 = DenseLayer(3, 3)
-a2 = SoftmaxActivation()
+# l1 = DenseLayer(2, 3)
+# a1 = ReLUActivation()
+# l2 = DenseLayer(3, 3)
+# a2 = SoftmaxActivation()
 
-l1.forward(x)
-a1.forward(l1.output)
+# l1.forward(x)
+# a1.forward(l1.output)
 
-l2.forward(a1.output)
-a2.forward(l2.output)
+# l2.forward(a1.output)
+# a2.forward(l2.output)
 
-print(a2.output[:5])
+# print(a2.output[:5])
 
 import numpy as np
 
@@ -37,8 +37,6 @@ predictions = np.array(
     ]
 )
 
-A = one_hot_encoding * predictions
-B = np.sum(A, axis=1)
-C = -np.log(B)
-loss = np.mean(C)
+loss_function = CategoricalCrossEntropyLoss()
+loss = loss_function.calculate(predictions, one_hot_encoding)
 print(loss)

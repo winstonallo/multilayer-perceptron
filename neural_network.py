@@ -11,27 +11,6 @@ class Neuron:
         return np.dot(inputs, weights) + bias
 
 
-class NeuronLayer:
-
-    def __init__(self, weights: ndarray, inputs: ndarray, biases: ndarray):
-        self.weights = np.array(weights)
-        self.inputs = np.array(inputs)
-        self.biases = np.array(biases)
-
-    def run(self, weights: ndarray, inputs: ndarray, biases: ndarray) -> ndarray:
-        # Get the outputs of the entire layer in one line using the dot product.
-        # In this case, np.dot() multiplies the weights matrix (X x Y)
-        # with the inputs vector (1 x X).
-        # See the Neuron class.
-        return np.dot(weights, inputs) + biases
-
-    def output(self) -> ndarray:
-        # This gets the layer outputs for a whole batch of inputs at a time.
-        # Inputs and weights are both X x Y, therefore we must transpose the weights
-        # in order to convert them into Y x X and make the dot product possible.
-        return np.dot(self.inputs, self.weights.T) + self.biases
-
-
 class DenseLayer:
     # This class simplifies the creation of neuron layers by
     # randomly assigning weights on a Gaussian distribution,
@@ -83,7 +62,7 @@ class SoftmaxActivation:
 
 class Loss:
     # Base class for losses. Gets the array of losses from the forward()
-    # method implemented in the child and returns its mean, which will be our 
+    # method implemented in the child and returns its mean, which will be our
     # final value.
     def calculate(self, output, y):
         sample_losses = self.forward(output, y)
@@ -115,7 +94,7 @@ class CategoricalCrossEntropyLoss(Loss):
             # will zero out the false predictions, thus ignoring them
             # in loss calculation.
             confidence = np.sum(clipped_prediction * true_value, axis=1)
-        
+
         negative_log_likelihoods = -np.log(confidence)
         # The return array consists of the negative logs of the confidence
         # for all correct predictions. This is what we will take the mean
