@@ -30,30 +30,20 @@ class BinaryCrossEntropyLoss(Loss):
     # Formula:
     #   BCE = -(y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred))
 
-    def forward(self, y_pred: ndarray, y_true: ndarray) -> ndarray:
-        # Clip both sides of the data in order to prevent dragging the
-        # mean towards 1 or 0 and division by zero.
-        self.y_pred_clip = np.clip(y_pred, 1e-7, 1 - 1e-7)
-        self.y_true = y_true
-
-        # A = -(y_true * log(y_pred))
-        neg_y_true = -1 * y_true
-        log_y_pred = np.log(self.y_pred_clip)
-        A = neg_y_true * log_y_pred
-
-        # B = -((1 - y_true) * log(1 - y_pred))
-        c_y_true = 1 - y_true
-        c_log_y_pred = np.log(1 - self.y_pred_clip)
-        B = c_y_true * c_log_y_pred
-
-        # BCE = -(y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred)) = A + B
-        BCE = A + B
-
-        return BCE
+    def calculate(self, predictions: ndarray, targets: ndarray) -> float:
+        # Clip the predictions to avoid log(0)
+        predictions = np.clip(predictions, 1e-12, 1 - 1e-12)
+        self.predictions = predictions
+        self.targets = targets
+        
+        # Calculate binary cross-entropy loss
+        loss = -np.mean(targets * np.log(predictions) + (1 - targets) * np.log(1 - predictions))
+        return loss
 
     def backward(self) -> ndarray:
-        dL_dy_pred = (self.y_pred_clip - self.y_true) / (self.y_pred_clip * (1 - self.y_pred_clip))
-        return dL_dy_pred
+        # Compute the gradient of the loss with respect to predictions
+        dL_dy = - (self.targets / self.predictions) + ((1 - self.targets) / (1 - self.predictions))
+        return dL_dy
 
 
 class CategoricalCrossEntropyLoss(Loss):

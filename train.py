@@ -67,6 +67,9 @@ for i in range(200):
     dL_dx = l1.backward(dL_dx)
 
 
+for i in range(100):
+    print(a3.y[i], targets[i])
+
 plt.plot(losses)
 plt.title('Training Loss')
 plt.xlabel('Iteration')
