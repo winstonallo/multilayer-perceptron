@@ -2,15 +2,6 @@ import numpy as np
 from numpy import ndarray
 
 
-class Neuron:
-    # The functionality of this class is abstracted away in NeuronLayer
-    # using the dot product of the weights and the inputs.
-
-    def output(self, weights: list[float], inputs: list[float], bias: float) -> float:
-        # Summation of weighted inputs with added bias.
-        return np.dot(inputs, weights) + bias
-
-
 class DenseLayer:
     # This class simplifies the creation of neuron layers by
     # randomly assigning weights on a Gaussian distribution,
