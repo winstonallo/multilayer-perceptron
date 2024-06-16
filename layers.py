@@ -2,17 +2,36 @@ import numpy as np
 from numpy import ndarray
 
 
+# The following classes are used to create layers in a neural network.
+# Each class has a forward method that calculates the output of the layer
+# based on the input it receives.
+#
+# Notation:
+#   - x: inputs (array)
+#   - y: output (array)
+#   - W: weights (array)
+#   - b: biases (array)
+#   - n_{x | neurons}: number of {x | neurons}
+
+
 class DenseLayer:
-    # This class simplifies the creation of neuron layers by
-    # randomly assigning weights on a Gaussian distribution,
-    # and setting bias to 0.
 
-    def __init__(self, n_inputs: int, n_neurons: int):
-        self.weights = 0.01 * np.random.randn(n_inputs, n_neurons)
-        self.biases = np.zeros((1, n_neurons))
+    def __init__(self, n_x: int, n_neurons: int):
+        self.W = 0.01 * np.random.randn(n_x, n_neurons)
+        self.b = np.zeros((1, n_neurons))
 
-    def forward(self, inputs: ndarray) -> None:
-        self.output = np.dot(inputs, self.weights) + self.biases
+    def forward(self, x: ndarray) -> None:
+        self.y = np.dot(x, self.W) + self.b
+
+
+class SigmoidActivation:
+    # Implementation of the sigmoid activation function, which
+    # squashes values between 0 and 1.
+    #
+    # Formula: y = 1 / (1 + e^-x)
+
+    def forward(self, x: ndarray) -> None:
+        self.y = 1 / (1 + np.exp(-x))
 
 
 class ReLUActivation:
@@ -21,8 +40,8 @@ class ReLUActivation:
     #
     # Formula: y = max(0, x)
 
-    def forward(self, inputs: ndarray) -> None:
-        self.output = np.maximum(0, inputs)
+    def forward(self, x: ndarray) -> None:
+        self.y = np.maximum(0, x)
 
 
 class SoftmaxActivation:
@@ -33,14 +52,14 @@ class SoftmaxActivation:
     #
     # Formula: e^x / sum(e^x)
 
-    def forward(self, inputs: ndarray) -> None:
+    def forward(self, x: ndarray) -> None:
         # For each row, we subtract its highest value from all others before
         # taking the exponents. This prevents the exponents from getting
         # too big.
         # We use keepdims=True in order to keep the dimensions of the original array.
         # This is VERY important, as mismatched dimensions lead to unrelated values
         # being subtracted from the rows.
-        exponential_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        exponential_values = np.exp(x - np.max(x, axis=1, keepdims=True))
 
         # After getting the exponent for each normalized value, we divide each of them
         # by the sum of all others in their respective row.
@@ -48,4 +67,4 @@ class SoftmaxActivation:
         # Example, for this array: [x y z]
         # x = e^x / e^x + e^y + e^z
         probabilities = exponential_values / np.sum(exponential_values, axis=1, keepdims=True)
-        self.output = probabilities
+        self.y = probabilities

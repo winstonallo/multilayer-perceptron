@@ -1,4 +1,5 @@
 from data import TrainingData
+from layers import DenseLayer, SigmoidActivation
 
 
 class Trainer:
@@ -7,7 +8,10 @@ class Trainer:
         self.inputs, self.targets = TrainingData().get_data()
 
 
-if __name__ == "__main__":
-    trainer = Trainer()
-    print(trainer.inputs)
-    print(trainer.targets)
+trainer = Trainer()
+
+
+inputs = trainer.inputs
+
+layer = DenseLayer(len(inputs[0]), 3)
+print(f"Initial weights: {layer.W}")
