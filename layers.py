@@ -12,16 +12,33 @@ from numpy import ndarray
 #   - W: weights (array)
 #   - b: biases (array)
 #   - n_{x | neurons}: number of {x | neurons}
+#   - L: loss
+#   - d{1}_d{2}: partial derivative of {1} with respect to {2}
 
 
 class DenseLayer:
 
-    def __init__(self, n_x: int, n_neurons: int):
-        self.W = 0.01 * np.random.randn(n_x, n_neurons)
+    def __init__(self, n_x: int, n_neurons: int, learning_rate: float):
+        self.W = 0.01 * np.random.randn(n_x, n_neurons) / np.sqrt(n_x)
         self.b = np.zeros((1, n_neurons))
+        self.learning_rate = learning_rate
 
     def forward(self, x: ndarray) -> None:
+        self.x = x
         self.y = np.dot(x, self.W) + self.b
+
+    def backward(self, dL_dy) -> ndarray:
+        dL_dx = np.dot(dL_dy, self.W.T)
+        dL_dW = np.dot(self.x.T, dL_dy)
+        dL_db = np.sum(dL_dy, axis=0, keepdims=True)
+
+
+        print(f"self.W: {self.W}, self.b: {self.b}, self.learning_rate: {self.learning_rate}")
+        self.W -= self.learning_rate * dL_dW
+        self.b -= self.learning_rate * dL_db
+        print(f"self.W: {self.W}, self.b: {self.b}, self.learning_rate: {self.learning_rate}")
+
+        return dL_dx
 
 
 class SigmoidActivation:
@@ -31,7 +48,14 @@ class SigmoidActivation:
     # Formula: y = 1 / (1 + e^-x)
 
     def forward(self, x: ndarray) -> None:
+        self.x = x
         self.y = 1 / (1 + np.exp(-x))
+
+    def backward(self, dL_dy: ndarray) -> ndarray:
+        dy_dx = self.y * (1 - self.y)
+        dL_dx = dL_dy * dy_dx
+
+        return dL_dx
 
 
 class ReLUActivation:
@@ -41,7 +65,14 @@ class ReLUActivation:
     # Formula: y = max(0, x)
 
     def forward(self, x: ndarray) -> None:
+        self.x = x
         self.y = np.maximum(0, x)
+
+    def backward(self, dL_dy: ndarray) -> ndarray:
+        dy_dx = (self.x > 0).astype(int)
+        dL_dx = dL_dy * dy_dx
+
+        return dL_dx
 
 
 class SoftmaxActivation:

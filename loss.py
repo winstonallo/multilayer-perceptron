@@ -33,22 +33,27 @@ class BinaryCrossEntropyLoss(Loss):
     def forward(self, y_pred: ndarray, y_true: ndarray) -> ndarray:
         # Clip both sides of the data in order to prevent dragging the
         # mean towards 1 or 0 and division by zero.
-        y_pred_clip = np.clip(y_pred, 1e-7, 1 - 1e-7)
+        self.y_pred_clip = np.clip(y_pred, 1e-7, 1 - 1e-7)
+        self.y_true = y_true
 
         # A = -(y_true * log(y_pred))
         neg_y_true = -1 * y_true
-        log_y_pred = np.log(y_pred_clip)
+        log_y_pred = np.log(self.y_pred_clip)
         A = neg_y_true * log_y_pred
 
         # B = -((1 - y_true) * log(1 - y_pred))
         c_y_true = 1 - y_true
-        c_log_y_pred = np.log(1 - y_pred_clip)
+        c_log_y_pred = np.log(1 - self.y_pred_clip)
         B = c_y_true * c_log_y_pred
 
         # BCE = -(y_true * log(y_pred) + (1 - y_true) * log(1 - y_pred)) = A + B
         BCE = A + B
 
         return BCE
+
+    def backward(self) -> ndarray:
+        dL_dy_pred = (self.y_pred_clip - self.y_true) / (self.y_pred_clip * (1 - self.y_pred_clip))
+        return dL_dy_pred
 
 
 class CategoricalCrossEntropyLoss(Loss):
