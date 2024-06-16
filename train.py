@@ -53,20 +53,18 @@ for i in range(200):
     loss = L.calculate(a3.y, targets)
     losses.append(loss)
 
+    print('Loss:', loss)
+
     dL_dy = L.backward()
 
     dL_dx = a3.backward(dL_dy)
     dL_dx = l3.backward(dL_dx)
 
-    dL_dx = a2.backward(dL_dy)
+    dL_dx = a2.backward(dL_dx)
     dL_dx = l2.backward(dL_dx)
 
     dL_dx = a1.backward(dL_dx)
     dL_dx = l1.backward(dL_dx)
-
-    # if i % 20 == 0:
-    print(f"Iteration no.{i + 1}: Loss = {loss}")
-    print(f"Output: {a3.y}")
 
 
 plt.plot(losses)

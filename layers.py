@@ -33,10 +33,8 @@ class DenseLayer:
         dL_db = np.sum(dL_dy, axis=0, keepdims=True)
 
 
-        print(f"self.W: {self.W}, self.b: {self.b}, self.learning_rate: {self.learning_rate}")
         self.W -= self.learning_rate * dL_dW
         self.b -= self.learning_rate * dL_db
-        print(f"self.W: {self.W}, self.b: {self.b}, self.learning_rate: {self.learning_rate}")
 
         return dL_dx
 
@@ -49,6 +47,7 @@ class SigmoidActivation:
 
     def forward(self, x: ndarray) -> None:
         self.x = x
+        x = np.clip(x, -500, 500)
         self.y = 1 / (1 + np.exp(-x))
 
     def backward(self, dL_dy: ndarray) -> ndarray:
