@@ -3,25 +3,11 @@ from layers import DenseLayer, SigmoidActivation, ReLUActivation
 from loss import BinaryCrossEntropyLoss
 import matplotlib.pyplot as plt
 
-
-# Notation:
-#   - x: inputs (array)
-#   - y: output (array)
-#   - W: weights (array)
-#   - b: biases (array)
-#   - l: neuron layer
-#   - a: activation layer
-#   - L: loss function
-
-
 class Trainer:
-
     def __init__(self):
         self.x, self.y_true = TrainingData().get_data()
 
-
 trainer = Trainer()
-
 
 inputs = trainer.x
 targets = trainer.y_true
@@ -39,8 +25,16 @@ L = BinaryCrossEntropyLoss()
 
 losses = []
 
-for i in range(200):
+# Turn on interactive mode
+plt.ion()
 
+# Initialize the plot
+plt.figure()
+plt.title('Training Loss')
+plt.xlabel('Iteration')
+plt.ylabel('Loss')
+
+for i in range(200):
     l1.forward(inputs)
     a1.forward(l1.y)
 
@@ -66,12 +60,12 @@ for i in range(200):
     dL_dx = a1.backward(dL_dx)
     dL_dx = l1.backward(dL_dx)
 
+    # Update the plot
+    plt.cla()
+    plt.plot(losses)
+    plt.draw()
+    plt.pause(0.01)
 
-for i in range(100):
-    print(a3.y[i], targets[i])
-
-plt.plot(losses)
-plt.title('Training Loss')
-plt.xlabel('Iteration')
-plt.ylabel('Loss')
-# plt.show()
+# Turn off interactive mode and show the plot
+plt.ioff()
+plt.show()
