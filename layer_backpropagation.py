@@ -58,8 +58,7 @@ for i in range(200):
     weights -= learning_rate * derivative_loss_w
     biases -= learning_rate * derivative_loss_b
 
-    if i % 20 == 0:
-        print(f"Iteration no.{i + 1}: Loss = {loss}")
+    print(f"Iteration no.{i + 1}: Loss = {loss}")
 
 print(f"Final weights:\n", weights)
 print(f"Final biases:\n", biases)
