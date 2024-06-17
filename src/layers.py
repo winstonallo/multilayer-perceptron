@@ -23,12 +23,18 @@ class DenseLayer:
     on the input data.
     """
 
-    def __init__(self, n_x: int, n_neurons: int, learning_rate: float):
+    def __init__(self, n_x: int, n_neurons: int, learning_rate: float = None):
         self.w = 0.01 * np.random.randn(n_x, n_neurons) / np.sqrt(n_x)
         self.b = np.zeros((1, n_neurons))
         self.learning_rate = learning_rate
         self.x = None
         self.y = None
+
+    def set_weights(self, weights: ndarray) -> None:
+        self.w = weights
+
+    def set_biases(self, biases: ndarray) -> None:
+        self.b = biases
 
     def forward(self, x: ndarray) -> ndarray:
         """

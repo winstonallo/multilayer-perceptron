@@ -13,6 +13,7 @@ from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivat
 from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 import os
 import json
+import shutil
 
 
 class NeuralNetwork:
@@ -22,19 +23,20 @@ class NeuralNetwork:
 
     def __init__(
         self,
-        n_layers: int,
-        n_inputs: int,
-        n_outputs: int,
-        n_neurons: int,
-        hidden_act: str,
-        output_act: str,
-        loss_func: str,
+        n_layers: int = 0,
+        n_inputs: int = 0,
+        n_outputs: int = 0,
+        n_neurons: int = 0,
+        hidden_act: str = None,
+        output_act: str = None,
+        loss_func: str = None,
         learning_rate: float = 0.01,
         n_epochs: int = 100,
-        from_model: str = None
+        from_model: str = None,
     ):
         if from_model is not None:
-            pass # self.load(...)
+            self.load(from_model)
+            return
         self.n_layers = n_layers
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
@@ -76,33 +78,52 @@ class NeuralNetwork:
             self.backward()
 
     def save(self, name: str):
+        if os.path.exists(name):
+            shutil.rmtree(name)
         os.makedirs(name, exist_ok=True)
-        weights = []
-        biases = []
-        architecture = {
-            "n_layers": self.n_layers,
-            "n_inputs": self.n_inputs,
-            "n_outputs": self.n_outputs,
-            "n_neurons": self.n_neurons,
-            "hidden_act": self.hidden_act.__str__(),
-            "output_act": self.output_act.__str__(),
-        }
+        architecture = []
 
-        for layer in self.layers:
+        for i, layer in enumerate(self.layers):
             if isinstance(layer, DenseLayer):
                 w, b = layer.get_weights_biases()
-                weights.append(w)
-                biases.append(b)
+                np.save(os.path.join(name, f'weights_{i}.npy'), w)
+                np.save(os.path.join(name, f'biases_{i}.npy'), b)
+                architecture.append({
+                    'type': 'DenseLayer',
+                    'n_inputs': w.shape[0],
+                    'n_neurons': w.shape[1]
+                })
+            elif isinstance(layer, (ReLUActivation, SigmoidActivation, SoftmaxActivation)):
+                architecture.append({
+                    'type': layer.__str__()
+                })
 
-        for i, weights_set in enumerate(weights):
-            np.save(os.path.join(name, f"weights_{i}.npy"), weights_set)
-        for i, biases_set in enumerate(biases):
-            np.save(os.path.join(name, f"biases_{i}.npy"), biases_set)
-        with open(os.path.join(name, "architecture.json"), "w") as f:
-            json.dump(architecture, f)
+        architecture.append({
+            "type": "loss_func",
+            "func": self.loss_func.__str__(),
+        })
+
+        with open(os.path.join(name, 'architecture.json'), 'w') as f:
+            json.dump(architecture, f, indent=4)
+
+    def load(self, name: str):
+        with open(os.path.join(name, "architecture.json"), "r") as f:
+            architecture = json.load(f)
         
-        print("Saved new best model in ./best/")
-
+        self.layers = []
+        for i, layer_info in enumerate(architecture):
+            if layer_info["type"] == "DenseLayer":
+                n_inputs = layer_info["n_inputs"]
+                n_neurons = layer_info["n_neurons"]
+                layer = DenseLayer(n_inputs, n_neurons)
+                layer.set_weights(np.load(os.path.join(name, f"weights_{i}.npy")))
+                layer.set_biases(np.load(os.path.join(name, f"biases_{i}.npy")))
+                self.layers.append(layer)
+            elif layer_info["type"] == "loss_func":
+                self.loss_func = self._initializers()["loss"][layer_info["func"]]()
+            else:
+                self.layers.append(self._initializers()["activation"][layer_info["type"]]())
+        
     def forward(self, x: ndarray):
         """
         Make a forward pass through the neural network.
