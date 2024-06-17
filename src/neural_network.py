@@ -32,10 +32,10 @@ class NeuralNetwork:
         loss_func: str = None,
         learning_rate: float = 0.01,
         n_epochs: int = 100,
-        from_model: str = None,
+        from_pretrained: str = None,
     ):
-        if from_model is not None:
-            self.load(from_model)
+        if from_pretrained is not None:
+            self._load(from_pretrained)
             return
         self.n_layers = n_layers
         self.n_inputs = n_inputs
@@ -49,6 +49,26 @@ class NeuralNetwork:
         self.layers = []
         self._build()
 
+
+    def fit(self, x: ndarray, y_true: ndarray):
+        """
+        Fit the neural network model to the training data.
+        """
+
+        for _ in range(self.n_epochs):
+            y_pred = self._forward(x)
+            self.loss_func.forward(y_pred, y_true)
+            self._backward()
+
+    def save(self, name: str):
+        """
+        Save the trained model to ./{name}/. This allows you to load the model
+        for further use.
+        """
+        self._clear_or_create_directory(name)
+        architecture = self._get_architecture(name)
+        self._save_architecture(name, architecture)
+
     def _build(self):
         self.layers.append(DenseLayer(self.n_inputs, self.n_neurons, self.learning_rate))
         self.layers.append(self.hidden_act)
@@ -60,28 +80,47 @@ class NeuralNetwork:
         self.layers.append(DenseLayer(self.n_neurons, self.n_outputs, self.learning_rate))
         self.layers.append(self.output_act)
 
-    def fit(self, x: ndarray, y_true: ndarray):
+
+    def _forward(self, x: ndarray):
         """
-        Fit the neural network model to the training data.
+        Make a forward pass through the neural network.
         """
-        losses = []
-        accuracies = []
+        y = x
+        for layer in self.layers:
+            y = layer.forward(y)
+        return y
 
-        for _ in range(self.n_epochs):
-            y_pred = self.forward(x)
-            loss = self.loss_func.forward(y_pred, y_true)
-            losses.append(loss)
+    def _backward(self):
+        """
+        Make a backward pass through the neural network to update the weights.
+        """
+        dl_dy = self.loss_func.backward()
+        for layer in reversed(self.layers):
+            dl_dy = layer.backward(dl_dy)
 
-            accuracy = ((y_pred > 0.5) == y_true).mean()
-            accuracies.append(accuracy)
+    def _load(self, name: str):
+        architecture = self._load_architecture(name)
 
-            self.backward()
+        self.layers = []
+        for i, layer_info in enumerate(architecture):
+            if layer_info["type"] == "DenseLayer":
+                self._load_dense_layer(layer_info, i, name)
 
+            elif layer_info["type"] == "loss_func":
+                self.loss_func = self._initializers()["loss"][layer_info["func"]]()
+            else:
+                self.layers.append(self._initializers()["activation"][layer_info["type"]]())
 
-    def save(self, name: str):
-        self._clear_or_create_directory(name)
-        architecture = self._get_architecture(name)
-        self._save_architecture(name, architecture)
+    def _load_dense_layer(self, layer_info: dict, index: int, name: str):
+        layer = DenseLayer(layer_info["n_inputs"], layer_info["n_neurons"])
+        layer.set_weights(np.load(os.path.join(name, f"weights_{index}.npy")))
+        layer.set_biases(np.load(os.path.join(name, f"biases_{index}.npy")))
+        self.layers.append(layer)
+
+    def _load_architecture(self, name: str):
+        with open(os.path.join(name, "architecture.json"), "r") as f:
+            architecture = json.load(f)
+        return architecture
 
     def _get_architecture(self, name: str):
         architecture = []
@@ -103,46 +142,10 @@ class NeuralNetwork:
         with open(os.path.join(name, "architecture.json"), "w") as f:
             json.dump(architecture, f, indent=4)
 
-
     def _clear_or_create_directory(self, name: str):
         if os.path.exists(name):
             shutil.rmtree(name)
         os.makedirs(name, exist_ok=True)
-
-    def load(self, name: str):
-        with open(os.path.join(name, "architecture.json"), "r") as f:
-            architecture = json.load(f)
-        
-        self.layers = []
-        for i, layer_info in enumerate(architecture):
-            if layer_info["type"] == "DenseLayer":
-                n_inputs = layer_info["n_inputs"]
-                n_neurons = layer_info["n_neurons"]
-                layer = DenseLayer(n_inputs, n_neurons)
-                layer.set_weights(np.load(os.path.join(name, f"weights_{i}.npy")))
-                layer.set_biases(np.load(os.path.join(name, f"biases_{i}.npy")))
-                self.layers.append(layer)
-            elif layer_info["type"] == "loss_func":
-                self.loss_func = self._initializers()["loss"][layer_info["func"]]()
-            else:
-                self.layers.append(self._initializers()["activation"][layer_info["type"]]())
-        
-    def _forward(self, x: ndarray):
-        """
-        Make a forward pass through the neural network.
-        """
-        y = x
-        for layer in self.layers:
-            y = layer.forward(y)
-        return y
-
-    def _backward(self):
-        """
-        Make a backward pass through the neural network to update the weights.
-        """
-        dl_dy = self.loss_func.backward()
-        for layer in reversed(self.layers):
-            dl_dy = layer.backward(dl_dy)
 
     def _initializers(self):
         return {

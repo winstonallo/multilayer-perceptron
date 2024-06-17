@@ -129,7 +129,6 @@ best_params, results = tune_hyperparams(x_train=x_train, y_train=y_train, x_test
 #     from_model="best"
 # )
 
-model = NeuralNetwork(from_model="best")
+model = NeuralNetwork(from_pretrained="best")
 test_loss = evaluate_model(model, x_test, y_test)
 print("Test Loss:", test_loss)
-
