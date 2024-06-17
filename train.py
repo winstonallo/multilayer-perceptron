@@ -8,17 +8,17 @@ from numpy import ndarray
 class NeuralNetwork:
 
     def __init__(
-            self,
-            n_layer: int,
-            n_inputs: int,
-            n_outputs: int,
-            n_neurons: int,
-            hidden_act: str,
-            output_act: str,
-            loss_func: str,
-            learning_rate: float = 0.01,
-            n_epochs: int = 100,
-        ):
+        self,
+        n_layer: int,
+        n_inputs: int,
+        n_outputs: int,
+        n_neurons: int,
+        hidden_act: str,
+        output_act: str,
+        loss_func: str,
+        learning_rate: float = 0.01,
+        n_epochs: int = 100,
+    ):
         self.n_layer = n_layer
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
@@ -49,9 +49,9 @@ class NeuralNetwork:
         losses = []
         plt.ion()
         plt.figure()
-        plt.title('Training Loss')
-        plt.xlabel('Iteration')
-        plt.ylabel('Loss')
+        plt.title("Training Loss")
+        plt.xlabel("Iteration")
+        plt.ylabel("Loss")
 
         for epoch in range(self.n_epochs):
             y_pred = self.forward(x)
@@ -59,7 +59,7 @@ class NeuralNetwork:
             losses.append(L)
 
             # Implement early stopping here
-            self.backward(y_pred, y_true)
+            self.backward()
 
             plt.cla()
             plt.plot(losses)
@@ -90,7 +90,7 @@ class NeuralNetwork:
             "loss": {
                 "BCE": BinaryCrossEntropyLoss,
                 "CCE": CategoricalCrossEntropyLoss,
-            }
+            },
         }
 
 
@@ -106,15 +106,17 @@ model = NeuralNetwork(
     output_act="Sigmoid",
     loss_func="BCE",
     learning_rate=0.01,
-    n_epochs=100
+    n_epochs=100,
 )
 
 model.fit(x_train, y_train)
+
 
 def evaluate_model(model: NeuralNetwork, x: ndarray, y_true: ndarray):
     y_pred = model.forward(x)
     loss = model.loss_func.calculate(y_pred, y_true)
     return loss
+
 
 test_loss = evaluate_model(model, x_test, y_test)
 print("Test Loss:", test_loss)

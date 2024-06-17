@@ -35,14 +35,14 @@ class BinaryCrossEntropyLoss(Loss):
         predictions = np.clip(predictions, 1e-12, 1 - 1e-12)
         self.predictions = predictions
         self.targets = targets
-        
+
         # Calculate binary cross-entropy loss
         loss = -np.mean(targets * np.log(predictions) + (1 - targets) * np.log(1 - predictions))
         return loss
 
     def backward(self) -> ndarray:
         # Compute the gradient of the loss with respect to predictions
-        dL_dy = - (self.targets / self.predictions) + ((1 - self.targets) / (1 - self.predictions))
+        dL_dy = -(self.targets / self.predictions) + ((1 - self.targets) / (1 - self.predictions))
         return dL_dy
 
 

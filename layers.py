@@ -27,11 +27,12 @@ class DenseLayer:
         self.x = x
         self.y = np.dot(x, self.W) + self.b
 
+        return self.y
+
     def backward(self, dL_dy) -> ndarray:
         dL_dx = np.dot(dL_dy, self.W.T)
         dL_dW = np.dot(self.x.T, dL_dy)
         dL_db = np.sum(dL_dy, axis=0, keepdims=True)
-
 
         self.W -= self.learning_rate * dL_dW
         self.b -= self.learning_rate * dL_db
@@ -50,6 +51,8 @@ class SigmoidActivation:
         x = np.clip(x, -500, 500)
         self.y = 1 / (1 + np.exp(-x))
 
+        return self.y
+
     def backward(self, dL_dy: ndarray) -> ndarray:
         dy_dx = self.y * (1 - self.y)
         dL_dx = dL_dy * dy_dx
@@ -66,6 +69,8 @@ class ReLUActivation:
     def forward(self, x: ndarray) -> None:
         self.x = x
         self.y = np.maximum(0, x)
+
+        return self.y
 
     def backward(self, dL_dy: ndarray) -> ndarray:
         dy_dx = (self.x > 0).astype(int)
@@ -98,3 +103,5 @@ class SoftmaxActivation:
         # x = e^x / e^x + e^y + e^z
         probabilities = exponential_values / np.sum(exponential_values, axis=1, keepdims=True)
         self.y = probabilities
+
+        return self.y
