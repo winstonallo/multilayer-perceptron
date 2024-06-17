@@ -67,7 +67,7 @@ class NeuralNetwork:
         losses = []
         accuracies = []
 
-        for epoch in range(self.n_epochs):
+        for _ in range(self.n_epochs):
             y_pred = self.forward(x)
             loss = self.loss_func.forward(y_pred, y_true)
             losses.append(loss)
@@ -77,34 +77,37 @@ class NeuralNetwork:
 
             self.backward()
 
+
     def save(self, name: str):
+        self._clear_or_create_directory(name)
+        architecture = self._get_architecture(name)
+        self._save_architecture(name, architecture)
+
+    def _get_architecture(self, name: str):
+        architecture = []
+        for i, layer in enumerate(self.layers):
+            if isinstance(layer, DenseLayer):
+                architecture.append(self._get_dense_layer_info(i, layer, name))
+            elif isinstance(layer, (ReLUActivation, SigmoidActivation, SoftmaxActivation)):
+                architecture.append({"type": layer.__str__()})
+        architecture.append({"type": "loss_func", "func": self.loss_func.__str__()})
+        return architecture
+
+    def _get_dense_layer_info(self, i: int, layer: DenseLayer, name: str):
+        w, b = layer.get_weights_biases()
+        np.save(os.path.join(name, f"weights_{i}"), w)
+        np.save(os.path.join(name, f"biases_{i}"), b)
+        return {"type": "DenseLayer", "n_inputs": w.shape[0], "n_neurons": w.shape[1]}
+
+    def _save_architecture(self, name: str, architecture: list[dict]):
+        with open(os.path.join(name, "architecture.json"), "w") as f:
+            json.dump(architecture, f, indent=4)
+
+
+    def _clear_or_create_directory(self, name: str):
         if os.path.exists(name):
             shutil.rmtree(name)
         os.makedirs(name, exist_ok=True)
-        architecture = []
-
-        for i, layer in enumerate(self.layers):
-            if isinstance(layer, DenseLayer):
-                w, b = layer.get_weights_biases()
-                np.save(os.path.join(name, f'weights_{i}.npy'), w)
-                np.save(os.path.join(name, f'biases_{i}.npy'), b)
-                architecture.append({
-                    'type': 'DenseLayer',
-                    'n_inputs': w.shape[0],
-                    'n_neurons': w.shape[1]
-                })
-            elif isinstance(layer, (ReLUActivation, SigmoidActivation, SoftmaxActivation)):
-                architecture.append({
-                    'type': layer.__str__()
-                })
-
-        architecture.append({
-            "type": "loss_func",
-            "func": self.loss_func.__str__(),
-        })
-
-        with open(os.path.join(name, 'architecture.json'), 'w') as f:
-            json.dump(architecture, f, indent=4)
 
     def load(self, name: str):
         with open(os.path.join(name, "architecture.json"), "r") as f:
@@ -124,7 +127,7 @@ class NeuralNetwork:
             else:
                 self.layers.append(self._initializers()["activation"][layer_info["type"]]())
         
-    def forward(self, x: ndarray):
+    def _forward(self, x: ndarray):
         """
         Make a forward pass through the neural network.
         """
@@ -133,7 +136,7 @@ class NeuralNetwork:
             y = layer.forward(y)
         return y
 
-    def backward(self):
+    def _backward(self):
         """
         Make a backward pass through the neural network to update the weights.
         """

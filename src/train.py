@@ -16,7 +16,7 @@ def evaluate_model(trained_model: NeuralNetwork, x: ndarray, y_true: ndarray):
     """
     Evaluate the model on the test data.
     """
-    y_pred = trained_model.forward(x)
+    y_pred = trained_model._forward(x)
 
     loss = trained_model.loss_func.forward(predictions=y_pred, targets=y_true)
     return loss
@@ -113,7 +113,7 @@ def tune_hyperparams(
 
 
 # Run the hyperparameter tuning
-# best_params, results = tune_hyperparams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)
+best_params, results = tune_hyperparams(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)
 
 # # Train the best model
 # model = NeuralNetwork(

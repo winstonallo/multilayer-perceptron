@@ -31,7 +31,7 @@ class Data:
 
         self.df["diagnosis"] = self.df["diagnosis"].map({"M": 1, "B": 0})
 
-        self.df = self.df.fillna(self.df.mean())  # Fill missing values with the mean
+        self.df = self.df.fillna(self.df.mean())
 
         self._scale_features()
 
