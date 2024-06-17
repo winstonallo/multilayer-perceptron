@@ -18,6 +18,8 @@ class NeuralNetwork:
         loss_func: str,
         learning_rate: float = 0.01,
         n_epochs: int = 100,
+        early_stopping: bool = True,
+        patience: int = 10,
     ):
         self.n_layer = n_layer
         self.n_inputs = n_inputs
@@ -29,6 +31,8 @@ class NeuralNetwork:
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
         self.layers = []
+        self.early_stopping = early_stopping
+        self.patience = patience
         self._build()
 
     def _build(self):
@@ -58,7 +62,7 @@ class NeuralNetwork:
 
         for epoch in range(self.n_epochs):
             y_pred = self.forward(x)
-            L = self.loss_func.calculate(y_pred, y_true)
+            L = self.loss_func.forward(y_pred, y_true)
             losses.append(L)
 
             accuracy = ((y_pred > 0.5) == y_true).mean()
@@ -121,7 +125,7 @@ model.fit(x_train, y_train)
 
 def evaluate_model(model: NeuralNetwork, x: ndarray, y_true: ndarray):
     y_pred = model.forward(x)
-    loss = model.loss_func.calculate(y_pred, y_true)
+    loss = model.loss_func.forward(y_pred, y_true)
     return loss
 
 

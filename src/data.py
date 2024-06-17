@@ -2,7 +2,9 @@ import pandas as pd
 import numpy as np
 from numpy import ndarray
 
+
 class Data:
+
     def __init__(self, csv_path: str, drop_columns: list[str] = None) -> None:
         # The data is missing headers, header=None prevents pandas from interpreting
         # the first row as column names
@@ -29,16 +31,8 @@ class Data:
             if column != "diagnosis":
                 self.df[column] = (self.df[column] - self.df[column].mean()) / self.df[column].std()
 
-        # Check shapes before conversion
-        print("DataFrame shape after preprocessing:", self.df.shape)
-
-        # Separate the input from the target values and convert them to NumPy arrays
         self.X = self.df.drop("diagnosis", axis=1).to_numpy()
         self.y = self.df["diagnosis"].to_numpy().reshape(-1, 1)
-
-        # Check shapes after conversion
-        print("Shape of X:", self.X.shape)
-        print("Shape of y:", self.y.shape)
 
     def _add_columns(self) -> None:
         columns = [
@@ -77,6 +71,7 @@ class Data:
         ]
 
         self.df.columns = columns
+
 
 def train_test_split(x: ndarray, y: ndarray, split: float) -> tuple:
     assert 0 < split < 1, "Split ratio must be between 0 and 1."
