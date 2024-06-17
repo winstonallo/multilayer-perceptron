@@ -1,71 +1,120 @@
-from data import TrainingData
-from layers import DenseLayer, SigmoidActivation, ReLUActivation
-from loss import BinaryCrossEntropyLoss
+from data import TrainingData, TestData
+from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivation
+from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 import matplotlib.pyplot as plt
+from numpy import ndarray
 
-class Trainer:
-    def __init__(self):
-        self.x, self.y_true = TrainingData().get_data()
 
-trainer = Trainer()
+class NeuralNetwork:
 
-inputs = trainer.x
-targets = trainer.y_true
+    def __init__(
+            self,
+            n_layer: int,
+            n_inputs: int,
+            n_outputs: int,
+            n_neurons: int,
+            hidden_act: str,
+            output_act: str,
+            loss_func: str,
+            learning_rate: float = 0.01,
+            n_epochs: int = 100,
+        ):
+        self.n_layer = n_layer
+        self.n_inputs = n_inputs
+        self.n_outputs = n_outputs
+        self.n_neurons = n_neurons
+        self.hidden_act = self.initializers()["activation"][hidden_act]()
+        self.output_act = self.initializers()["activation"][output_act]()
+        self.loss_func = self.initializers()["loss"][loss_func]()
+        self.learning_rate = learning_rate
+        self.n_epochs = n_epochs
+        self.layers = []
+        self._build()
 
-l1 = DenseLayer(len(inputs[0]), 3, 0.01)
-a1 = ReLUActivation()
+    def _build(self):
+        # Input layer
+        self.layers.append(DenseLayer(self.n_inputs, self.n_neurons, self.learning_rate))
+        self.layers.append(self.hidden_act)
 
-l2 = DenseLayer(3, 3, 0.01)
-a2 = ReLUActivation()
+        # Hidden layers
+        for _ in range(self.n_layer - 2):
+            self.layers.append(DenseLayer(self.n_neurons, self.n_neurons, self.learning_rate))
+            self.layers.append(self.hidden_act)
 
-l3 = DenseLayer(3, 1, 0.01)
-a3 = SigmoidActivation()
+        # Output layer
+        self.layers.append(DenseLayer(self.n_neurons, self.n_outputs, self.learning_rate))
+        self.layers.append(self.output_act)
 
-L = BinaryCrossEntropyLoss()
+    def fit(self, x: ndarray, y_true: ndarray):
+        losses = []
+        plt.ion()
+        plt.figure()
+        plt.title('Training Loss')
+        plt.xlabel('Iteration')
+        plt.ylabel('Loss')
 
-losses = []
+        for epoch in range(self.n_epochs):
+            y_pred = self.forward(x)
+            L = self.loss_func.calculate(y_pred, y_true)
+            losses.append(L)
 
-# Turn on interactive mode
-plt.ion()
+            # Implement early stopping here
+            self.backward(y_pred, y_true)
 
-# Initialize the plot
-plt.figure()
-plt.title('Training Loss')
-plt.xlabel('Iteration')
-plt.ylabel('Loss')
+            plt.cla()
+            plt.plot(losses)
+            plt.draw()
+            plt.pause(0.01)
 
-for i in range(200):
-    l1.forward(inputs)
-    a1.forward(l1.y)
+        plt.ioff()
+        plt.show()
 
-    l2.forward(a1.y)
-    a2.forward(l2.y)
+    def forward(self, x: ndarray):
+        y = x
+        for layer in self.layers:
+            y = layer.forward(y)
+        return y
 
-    l3.forward(a2.y)
-    a3.forward(l3.y)
+    def backward(self, y_pred: ndarray, y_true: ndarray):
+        dL_dy = self.loss_func.backward()
+        for layer in reversed(self.layers):
+            dL_dy = layer.backward(dL_dy)
 
-    loss = L.calculate(a3.y, targets)
-    losses.append(loss)
+    def initializers(self):
+        return {
+            "activation": {
+                "ReLU": ReLUActivation,
+                "Sigmoid": SigmoidActivation,
+                "Softmax": SoftmaxActivation,
+            },
+            "loss": {
+                "BCE": BinaryCrossEntropyLoss,
+                "CCE": CategoricalCrossEntropyLoss,
+            }
+        }
 
-    print('Loss:', loss)
 
-    dL_dy = L.backward()
+x_train, y_train = TrainingData().get_data()
+x_test, y_test = TestData().get_data()
 
-    dL_dx = a3.backward(dL_dy)
-    dL_dx = l3.backward(dL_dx)
+model = NeuralNetwork(
+    n_layer=3,
+    n_inputs=len(x_train[0]),
+    n_outputs=1,
+    n_neurons=3,
+    hidden_act="ReLU",
+    output_act="Sigmoid",
+    loss_func="BCE",
+    learning_rate=0.01,
+    n_epochs=100
+)
 
-    dL_dx = a2.backward(dL_dx)
-    dL_dx = l2.backward(dL_dx)
+model.fit(x_train, y_train)
 
-    dL_dx = a1.backward(dL_dx)
-    dL_dx = l1.backward(dL_dx)
+def evaluate_model(model: NeuralNetwork, x: ndarray, y_true: ndarray):
+    y_pred = model.forward(x)
+    loss = model.loss_func.calculate(y_pred, y_true)
+    return loss
 
-    # Update the plot
-    plt.cla()
-    plt.plot(losses)
-    plt.draw()
-    plt.pause(0.01)
-
-# Turn off interactive mode and show the plot
-plt.ioff()
-plt.show()
+test_loss = evaluate_model(model, x_test, y_test)
+print("Test Loss:", test_loss)
