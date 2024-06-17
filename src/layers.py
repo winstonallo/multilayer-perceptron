@@ -53,6 +53,9 @@ class DenseLayer:
 
         return dl_dx
 
+    def get_weights_biases(self):
+        return self.w, self.b
+
 
 class Activation:
     """
@@ -74,6 +77,9 @@ class Activation:
         Calculate the partial derivative of the loss with respect to the inputs.
         """
         raise NotImplementedError()
+
+    def __str__(self):
+        raise NotImplementedError
 
 
 class SigmoidActivation(Activation):
@@ -103,6 +109,9 @@ class SigmoidActivation(Activation):
 
         return dl_dx
 
+    def __str__(self):
+        return "Sigmoid"
+
 
 class ReLUActivation(Activation):
     """
@@ -129,6 +138,9 @@ class ReLUActivation(Activation):
         dl_dx = dl_dy * dy_dx
 
         return dl_dx
+
+    def __str__(self):
+        return "ReLU"
 
 
 class SoftmaxActivation(Activation):
@@ -167,3 +179,6 @@ class SoftmaxActivation(Activation):
         Calculate the partial derivative of the loss with respect to the inputs.
         """
         raise NotImplementedError("Softmax backward pass is not implemented.")
+
+    def __str__(self):
+        return "Softmax"

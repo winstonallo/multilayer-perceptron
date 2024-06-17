@@ -7,9 +7,11 @@ is currently limited to the following configurations:
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 from numpy import ndarray
 from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivation
 from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
+import os
 
 
 class NeuralNetwork:
@@ -31,7 +33,7 @@ class NeuralNetwork:
         early_stopping: bool = True,
         patience: int = 10,
     ):
-        self.n_layer = n_layers
+        self.n_layers = n_layers
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
         self.n_neurons = n_neurons
@@ -46,16 +48,13 @@ class NeuralNetwork:
         self._build()
 
     def _build(self):
-        # Input layer
         self.layers.append(DenseLayer(self.n_inputs, self.n_neurons, self.learning_rate))
         self.layers.append(self.hidden_act)
 
-        # Hidden layers
-        for _ in range(self.n_layer - 2):
+        for _ in range(self.n_layers - 2):
             self.layers.append(DenseLayer(self.n_neurons, self.n_neurons, self.learning_rate))
             self.layers.append(self.hidden_act)
 
-        # Output layer
         self.layers.append(DenseLayer(self.n_neurons, self.n_outputs, self.learning_rate))
         self.layers.append(self.output_act)
 
@@ -65,13 +64,6 @@ class NeuralNetwork:
         """
         losses = []
         accuracies = []
-        # plt.ion()
-        # _, ax1 = plt.subplots()
-
-        # ax1.set_xlabel("Iteration")
-        # ax1.set_ylabel("Loss", color="tab:red")
-        # ax2 = ax1.twinx()
-        # ax2.set_ylabel("Accuracy", color="tab:blue")
 
         for epoch in range(self.n_epochs):
             y_pred = self.forward(x)
@@ -83,15 +75,26 @@ class NeuralNetwork:
 
             self.backward()
 
-            # ax1.plot(losses, color="tab:red", label="Loss" if epoch == 0 else "")
-            # ax2.plot(accuracies, color="tab:blue", label="Accuracy" if epoch == 0 else "")
-            # plt.draw()
-            # plt.pause(0.05)
+    def save(self, name: str):
+        os.makedirs(name, exist_ok=True)
+        weights = []
+        biases = []
+        architecture = {
+            "n_layers": self.n_layers,
+            "n_inputs": self.n_inputs,
+            "n_outputs": self.n_outputs,
+            "n_neurons": self.n_neurons,
+            "hidden_act": self.hidden_act.str(),
+            "output_act": self.output_act.str(),
+        }
 
-        # ax1.legend(loc="upper left")
-        # ax2.legend(loc="upper right")
-        # plt.ioff()
-        # plt.show()
+        for layer in self.layers:
+            if isinstance(layer, DenseLayer):
+                w, b = layer.get_weights_biases()
+                weights.append(w)
+                biases.append(b)
+        
+        np.save()
 
     def forward(self, x: ndarray):
         """

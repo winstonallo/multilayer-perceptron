@@ -56,6 +56,9 @@ class BinaryCrossEntropyLoss:
         dl_dy = -(self.targets / self.predictions) + ((1 - self.targets) / (1 - self.predictions))
         return dl_dy
 
+    def __str__(self):
+        return "BCE"
+
 
 class CategoricalCrossEntropyLoss:
     """
@@ -126,3 +129,6 @@ class CategoricalCrossEntropyLoss:
         # Calculate the gradient of the loss with respect to the predictions.
         grad = y_pred - y_true
         return grad
+
+    def __str__(self):
+        return "CCE"
