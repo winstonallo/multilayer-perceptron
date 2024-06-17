@@ -22,6 +22,7 @@ Notation:
 import numpy as np
 from numpy import ndarray
 
+
 class Activation:
     """
     An abstract class for activation functions.

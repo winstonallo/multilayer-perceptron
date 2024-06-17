@@ -49,7 +49,6 @@ class NeuralNetwork:
         self.layers = []
         self._build()
 
-
     def fit(self, x: ndarray, y_true: ndarray):
         """
         Fit the neural network model to the training data.
@@ -78,7 +77,6 @@ class NeuralNetwork:
 
         self.layers.append(DenseLayer(self.n_neurons, self.n_outputs, self.learning_rate))
         self.layers.append(self.output_act)
-
 
     def _forward(self, x: ndarray):
         """
