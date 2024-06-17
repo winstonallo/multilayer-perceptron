@@ -72,6 +72,7 @@ def tune_hyperparams(
                             "learning_rate": learning_rate,
                             "n_epochs": n_epochs,
                         }
+                        model.save("best")
                         print("New best params:", best_params)
                         print("New best test loss:", test_loss)
 

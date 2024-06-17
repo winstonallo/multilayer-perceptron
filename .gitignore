@@ -5,3 +5,8 @@ venv
 # CACHE
 
 *__pycache__/
+
+# MODELS
+
+*.npy
+*.json

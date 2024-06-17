@@ -12,6 +12,7 @@ from numpy import ndarray
 from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivation
 from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 import os
+import json
 
 
 class NeuralNetwork:
@@ -30,9 +31,10 @@ class NeuralNetwork:
         loss_func: str,
         learning_rate: float = 0.01,
         n_epochs: int = 100,
-        early_stopping: bool = True,
-        patience: int = 10,
+        from_model: str = None
     ):
+        if from_model is not None:
+            pass # self.load(...)
         self.n_layers = n_layers
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
@@ -43,8 +45,6 @@ class NeuralNetwork:
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
         self.layers = []
-        self.early_stopping = early_stopping
-        self.patience = patience
         self._build()
 
     def _build(self):
@@ -84,8 +84,8 @@ class NeuralNetwork:
             "n_inputs": self.n_inputs,
             "n_outputs": self.n_outputs,
             "n_neurons": self.n_neurons,
-            "hidden_act": self.hidden_act.str(),
-            "output_act": self.output_act.str(),
+            "hidden_act": self.hidden_act.__str__(),
+            "output_act": self.output_act.__str__(),
         }
 
         for layer in self.layers:
@@ -93,8 +93,15 @@ class NeuralNetwork:
                 w, b = layer.get_weights_biases()
                 weights.append(w)
                 biases.append(b)
+
+        for i, weights_set in enumerate(weights):
+            np.save(os.path.join(name, f"weights_{i}.npy"), weights_set)
+        for i, biases_set in enumerate(biases):
+            np.save(os.path.join(name, f"biases_{i}.npy"), biases_set)
+        with open(os.path.join(name, "architecture.json"), "w") as f:
+            json.dump(architecture, f)
         
-        np.save()
+        print("Saved new best model in ./best/")
 
     def forward(self, x: ndarray):
         """
