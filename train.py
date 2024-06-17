@@ -75,7 +75,7 @@ class NeuralNetwork:
             y = layer.forward(y)
         return y
 
-    def backward(self, y_pred: ndarray, y_true: ndarray):
+    def backward(self):
         dL_dy = self.loss_func.backward()
         for layer in reversed(self.layers):
             dL_dy = layer.backward(dL_dy)
