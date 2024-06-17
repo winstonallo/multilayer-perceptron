@@ -19,7 +19,7 @@ class NeuralNetwork:
 
     def __init__(
         self,
-        n_layer: int,
+        n_layers: int,
         n_inputs: int,
         n_outputs: int,
         n_neurons: int,
@@ -31,7 +31,7 @@ class NeuralNetwork:
         early_stopping: bool = True,
         patience: int = 10,
     ):
-        self.n_layer = n_layer
+        self.n_layer = n_layers
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
         self.n_neurons = n_neurons
@@ -88,6 +88,8 @@ class NeuralNetwork:
             plt.draw()
             plt.pause(0.05)
 
+        print("Final Accuracy:", accuracies[-1])
+        print("Final Loss:", losses[-1])
         ax1.legend(loc="upper left")
         ax2.legend(loc="upper right")
         plt.ioff()
