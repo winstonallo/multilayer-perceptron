@@ -23,7 +23,7 @@ class DenseLayer:
         self.b = np.zeros((1, n_neurons))
         self.learning_rate = learning_rate
 
-    def forward(self, x: ndarray) -> None:
+    def forward(self, x: ndarray) -> ndarray:
         self.x = x
         self.y = np.dot(x, self.W) + self.b
 
@@ -46,7 +46,7 @@ class SigmoidActivation:
     #
     # Formula: y = 1 / (1 + e^-x)
 
-    def forward(self, x: ndarray) -> None:
+    def forward(self, x: ndarray) -> ndarray:
         self.x = x
         x = np.clip(x, -500, 500)
         self.y = 1 / (1 + np.exp(-x))
@@ -66,7 +66,7 @@ class ReLUActivation:
     #
     # Formula: y = max(0, x)
 
-    def forward(self, x: ndarray) -> None:
+    def forward(self, x: ndarray) -> ndarray:
         self.x = x
         self.y = np.maximum(0, x)
 
@@ -87,7 +87,7 @@ class SoftmaxActivation:
     #
     # Formula: e^x / sum(e^x)
 
-    def forward(self, x: ndarray) -> None:
+    def forward(self, x: ndarray) -> ndarray:
         # For each row, we subtract its highest value from all others before
         # taking the exponents. This prevents the exponents from getting
         # too big.
