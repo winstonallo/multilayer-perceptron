@@ -1,4 +1,4 @@
-from data import TrainingData, TestData
+from data import Data, train_test_split
 from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivation
 from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 import matplotlib.pyplot as plt
@@ -101,8 +101,8 @@ class NeuralNetwork:
         }
 
 
-x_train, y_train = TrainingData().get_data()
-x_test, y_test = TestData().get_data()
+data = Data("./data/raw/data.csv", drop_columns=["id"])
+x_train, y_train, x_test, y_test = train_test_split(data.X, data.y, split=0.3)
 
 model = NeuralNetwork(
     n_layer=3,
