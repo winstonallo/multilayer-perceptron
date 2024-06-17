@@ -1,11 +1,21 @@
-from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivation
-from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
+"""
+This module contains the implementation of a neural network. The neural network 
+is currently limited to the following configurations:
+- Layers: DenseLayer
+- Activation functions: ReLUActivation, SigmoidActivation, SoftmaxActivation
+- Loss functions: BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
+"""
+
 import matplotlib.pyplot as plt
 from numpy import ndarray
-import numpy as np
+from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivation
+from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 
 
 class NeuralNetwork:
+    """
+    A neural network model that can be trained on data and used to make predictions.
+    """
 
     def __init__(
         self,
@@ -25,9 +35,9 @@ class NeuralNetwork:
         self.n_inputs = n_inputs
         self.n_outputs = n_outputs
         self.n_neurons = n_neurons
-        self.hidden_act = self.initializers()["activation"][hidden_act]()
-        self.output_act = self.initializers()["activation"][output_act]()
-        self.loss_func = self.initializers()["loss"][loss_func]()
+        self.hidden_act = self._initializers()["activation"][hidden_act]()
+        self.output_act = self._initializers()["activation"][output_act]()
+        self.loss_func = self._initializers()["loss"][loss_func]()
         self.learning_rate = learning_rate
         self.n_epochs = n_epochs
         self.layers = []
@@ -50,10 +60,13 @@ class NeuralNetwork:
         self.layers.append(self.output_act)
 
     def fit(self, x: ndarray, y_true: ndarray):
+        """
+        Fit the neural network model to the training data.
+        """
         losses = []
         accuracies = []
         plt.ion()
-        fig, ax1 = plt.subplots()
+        _, ax1 = plt.subplots()
 
         ax1.set_xlabel("Iteration")
         ax1.set_ylabel("Loss", color="tab:red")
@@ -62,8 +75,8 @@ class NeuralNetwork:
 
         for epoch in range(self.n_epochs):
             y_pred = self.forward(x)
-            L = self.loss_func.forward(y_pred, y_true)
-            losses.append(L)
+            loss = self.loss_func.forward(y_pred, y_true)
+            losses.append(loss)
 
             accuracy = ((y_pred > 0.5) == y_true).mean()
             accuracies.append(accuracy)
@@ -81,17 +94,23 @@ class NeuralNetwork:
         plt.show()
 
     def forward(self, x: ndarray):
+        """
+        Make a forward pass through the neural network.
+        """
         y = x
         for layer in self.layers:
             y = layer.forward(y)
         return y
 
     def backward(self):
-        dL_dy = self.loss_func.backward()
+        """
+        Make a backward pass through the neural network to update the weights.
+        """
+        dl_dy = self.loss_func.backward()
         for layer in reversed(self.layers):
-            dL_dy = layer.backward(dL_dy)
+            dl_dy = layer.backward(dl_dy)
 
-    def initializers(self):
+    def _initializers(self):
         return {
             "activation": {
                 "ReLU": ReLUActivation,

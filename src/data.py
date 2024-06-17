@@ -1,9 +1,18 @@
+"""
+This module contains the Data class which is responsible for loading the dataset
+and preprocessing it. The train_test_split function is used to split the dataset
+into training and testing sets.
+"""
+
 import pandas as pd
 import numpy as np
 from numpy import ndarray
 
 
 class Data:
+    """
+    A class to load and preprocess the dataset.
+    """
 
     def __init__(self, csv_path: str, drop_columns: list[str] = None) -> None:
         # The data is missing headers, header=None prevents pandas from interpreting
@@ -12,26 +21,25 @@ class Data:
         self._preprocess(drop_columns)
 
     def _preprocess(self, drop_columns: list[str]) -> None:
-        # Temporarily add the columns for easier preprocessing
-        self._add_columns()
+        """
+        Preprocess the dataset by converting categorical data into numerical,
+        and scaling the features and splitting the dataset into input and target.
+        """
 
-        # Remove irrelevant columns
+        self._add_columns()  # Temporarily add the columns for easier preprocessing
+
         if drop_columns:
             self.df.drop(drop_columns, axis=1, inplace=True)
 
-        # Convert categorical data into numerical for loss calculation
         self.df["diagnosis"] = self.df["diagnosis"].map({"M": 1, "B": 0})
 
-        # Fill missing values with mean for their column to ensure
-        # they have no impact on the dataset
-        self.df = self.df.fillna(self.df.mean())
+        self.df = self.df.fillna(self.df.mean())  # Fill missing values with the mean
 
-        # Scale features for faster convergence
-        for column in self.df.columns:
+        for column in self.df.columns:  # Standardize the features
             if column != "diagnosis":
                 self.df[column] = (self.df[column] - self.df[column].mean()) / self.df[column].std()
 
-        self.X = self.df.drop("diagnosis", axis=1).to_numpy()
+        self.x = self.df.drop("diagnosis", axis=1).to_numpy()
         self.y = self.df["diagnosis"].to_numpy().reshape(-1, 1)
 
     def _add_columns(self) -> None:
@@ -74,6 +82,9 @@ class Data:
 
 
 def train_test_split(x: ndarray, y: ndarray, split: float) -> tuple:
+    """
+    Split the dataset randomly into training and testing sets.
+    """
     assert 0 < split < 1, "Split ratio must be between 0 and 1."
 
     indices = np.arange(x.shape[0])
