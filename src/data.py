@@ -15,8 +15,6 @@ class Data:
     """
 
     def __init__(self, csv_path: str, drop_columns: list[str] = None) -> None:
-        # The data is missing headers, header=None prevents pandas from interpreting
-        # the first row as column names
         self.df = pd.read_csv(csv_path, header=None)
         self._preprocess(drop_columns)
 
@@ -26,7 +24,7 @@ class Data:
         and scaling the features and splitting the dataset into input and target.
         """
 
-        self._add_columns()  # Temporarily add the columns for easier preprocessing
+        self._add_columns()
 
         if drop_columns:
             self.df.drop(drop_columns, axis=1, inplace=True)
@@ -35,14 +33,23 @@ class Data:
 
         self.df = self.df.fillna(self.df.mean())  # Fill missing values with the mean
 
-        for column in self.df.columns:  # Standardize the features
-            if column != "diagnosis":
-                self.df[column] = (self.df[column] - self.df[column].mean()) / self.df[column].std()
+        self._scale_features()
 
         self.x = self.df.drop("diagnosis", axis=1).to_numpy()
         self.y = self.df["diagnosis"].to_numpy().reshape(-1, 1)
 
+    def _scale_features(self) -> None:
+        """
+        Standardize the features for faster convergence.
+        """
+        for column in self.df.columns:
+            if column != "diagnosis":
+                self.df[column] = (self.df[column] - self.df[column].mean()) / self.df[column].std()
+
     def _add_columns(self) -> None:
+        """
+        Temporarily add column names to the dataset for easier preprocessing.
+        """
         columns = [
             "id",
             "diagnosis",
