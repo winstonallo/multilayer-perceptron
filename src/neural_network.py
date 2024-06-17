@@ -6,10 +6,10 @@ is currently limited to the following configurations:
 - Loss functions: BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
 from numpy import ndarray
-from layers import DenseLayer, SigmoidActivation, ReLUActivation, SoftmaxActivation
+from dense_layer import DenseLayer
+from activation import SigmoidActivation, ReLUActivation, SoftmaxActivation
 from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 import os
 import json
@@ -54,7 +54,6 @@ class NeuralNetwork:
         """
         Fit the neural network model to the training data.
         """
-
         for _ in range(self.n_epochs):
             y_pred = self._forward(x)
             self.loss_func.forward(y_pred, y_true)
@@ -62,8 +61,8 @@ class NeuralNetwork:
 
     def save(self, name: str):
         """
-        Save the trained model to ./{name}/. This allows you to load the model
-        for further use.
+        Save the trained model to ./{name}/. This allows you to later load
+        the model for further use.
         """
         self._clear_or_create_directory(name)
         architecture = self._get_architecture(name)

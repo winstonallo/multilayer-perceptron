@@ -17,7 +17,7 @@ class BinaryCrossEntropyLoss:
     used when the output is binary. We do not need to sum the
     losses, as there is only one output.
 
-    Notations:
+    Notation:
         - BCE: Binary Cross Entropy
         - y_true: True values
         - y_pred: Predicted values

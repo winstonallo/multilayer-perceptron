@@ -6,7 +6,6 @@ from data import Data, train_test_split
 from neural_network import NeuralNetwork
 from numpy import ndarray
 
-# Assuming Data and train_test_split are already imported from your project.
 
 data = Data("./training_data/data.csv", drop_columns=["id"])
 x_train, y_train, x_test, y_test = train_test_split(data.x, data.y, split=0.2)
