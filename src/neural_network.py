@@ -65,13 +65,13 @@ class NeuralNetwork:
         """
         losses = []
         accuracies = []
-        plt.ion()
-        _, ax1 = plt.subplots()
+        # plt.ion()
+        # _, ax1 = plt.subplots()
 
-        ax1.set_xlabel("Iteration")
-        ax1.set_ylabel("Loss", color="tab:red")
-        ax2 = ax1.twinx()
-        ax2.set_ylabel("Accuracy", color="tab:blue")
+        # ax1.set_xlabel("Iteration")
+        # ax1.set_ylabel("Loss", color="tab:red")
+        # ax2 = ax1.twinx()
+        # ax2.set_ylabel("Accuracy", color="tab:blue")
 
         for epoch in range(self.n_epochs):
             y_pred = self.forward(x)
@@ -83,17 +83,15 @@ class NeuralNetwork:
 
             self.backward()
 
-            ax1.plot(losses, color="tab:red", label="Loss" if epoch == 0 else "")
-            ax2.plot(accuracies, color="tab:blue", label="Accuracy" if epoch == 0 else "")
-            plt.draw()
-            plt.pause(0.05)
+            # ax1.plot(losses, color="tab:red", label="Loss" if epoch == 0 else "")
+            # ax2.plot(accuracies, color="tab:blue", label="Accuracy" if epoch == 0 else "")
+            # plt.draw()
+            # plt.pause(0.05)
 
-        print("Final Accuracy:", accuracies[-1])
-        print("Final Loss:", losses[-1])
-        ax1.legend(loc="upper left")
-        ax2.legend(loc="upper right")
-        plt.ioff()
-        plt.show()
+        # ax1.legend(loc="upper left")
+        # ax2.legend(loc="upper right")
+        # plt.ioff()
+        # plt.show()
 
     def forward(self, x: ndarray):
         """
