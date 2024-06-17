@@ -47,25 +47,32 @@ class NeuralNetwork:
 
     def fit(self, x: ndarray, y_true: ndarray):
         losses = []
+        accuracies = []
         plt.ion()
-        plt.figure()
-        plt.title("Training Loss")
-        plt.xlabel("Iteration")
-        plt.ylabel("Loss")
+        fig, ax1 = plt.subplots()
+
+        ax1.set_xlabel('Iteration')
+        ax1.set_ylabel('Loss', color='tab:red')
+        ax2 = ax1.twinx()
+        ax2.set_ylabel('Accuracy', color='tab:blue')
 
         for epoch in range(self.n_epochs):
             y_pred = self.forward(x)
             L = self.loss_func.calculate(y_pred, y_true)
             losses.append(L)
 
-            # Implement early stopping here
+            accuracy = ((y_pred > 0.5) == y_true).mean()
+            accuracies.append(accuracy)
+
             self.backward()
 
-            plt.cla()
-            plt.plot(losses)
+            ax1.plot(losses, color='tab:red', label='Loss' if epoch == 0 else "")
+            ax2.plot(accuracies, color='tab:blue', label='Accuracy' if epoch == 0 else "")
             plt.draw()
-            plt.pause(0.01)
+            plt.pause(0.05)
 
+        ax1.legend(loc='upper left')
+        ax2.legend(loc='upper right')
         plt.ioff()
         plt.show()
 
@@ -101,12 +108,12 @@ model = NeuralNetwork(
     n_layer=3,
     n_inputs=len(x_train[0]),
     n_outputs=1,
-    n_neurons=3,
+    n_neurons=4,
     hidden_act="ReLU",
     output_act="Sigmoid",
     loss_func="BCE",
     learning_rate=0.01,
-    n_epochs=100,
+    n_epochs=150,
 )
 
 model.fit(x_train, y_train)
