@@ -30,6 +30,31 @@ def plot_prediction_histogram(y_true: ndarray, y_pred: ndarray, threshold: float
     plt.grid(True)
     plt.show()
 
+def plot_confusion_matrix(cm: ndarray, class_names: list):
+    """
+    Plot the confusion matrix using Matplotlib.
+    """
+    plt.figure(figsize=(8, 6))
+    plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title('Confusion Matrix')
+    plt.colorbar()
+
+    tick_marks = np.arange(len(class_names))
+    plt.xticks(tick_marks, class_names, rotation=45)
+    plt.yticks(tick_marks, class_names)
+
+    # Annotate each cell in the matrix with its count
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            plt.text(j, i, format(cm[i, j], 'd'),
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > cm.max() / 2 else "black")
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+    plt.show()
+
 if __name__ == "__main__":
     data = Data("./training_data/data.csv", drop_columns=["id"])
     # np.random.seed(15)
@@ -42,7 +67,9 @@ if __name__ == "__main__":
     y_pred = model.predict(data.x)
 
     performance = ClassificationMetrics(y_pred, data.y)
-    print("Confusion matrix:\n", performance.confusion_matrix())
+    cm = performance.confusion_matrix()
+    print("Confusion matrix:\n", cm)
+    
     print("Precision:", performance.precision())
     print("Recall:", performance.recall())
     print("F1:", performance.f1())
@@ -50,3 +77,6 @@ if __name__ == "__main__":
 
     # Plot the histogram of predicted probabilities
     plot_prediction_histogram(data.y, y_pred)
+
+    # Plot the confusion matrix
+    plot_confusion_matrix(cm, class_names=["Negative", "Positive"])
