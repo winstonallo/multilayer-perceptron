@@ -23,39 +23,41 @@ class NeuralNetwork:
 
     def __init__(
         self,
-        n_layers: int = 0,
         n_inputs: int = 0,
         n_outputs: int = 0,
-        n_neurons: int = 0,
-        hidden_act: str = None,
-        output_act: str = None,
-        loss_func: str = None,
+        n_layers: int = 2,
+        n_neurons: int = 3,
+        hidden_act: str = "ReLU",
+        output_act: str = "Sigmoid",
+        loss_func: str = "BCE",
         learning_rate: float = 0.01,
         n_epochs: int = 100,
         from_pretrained: str = None,
     ):
-        if from_pretrained is not None:
+        if from_pretrained is None:
+            assert n_inputs > 0 and n_outputs > 0, "Please specify the number of inputs."
+            self.n_layers = n_layers
+            self.n_inputs = n_inputs
+            self.n_outputs = n_outputs
+            self.n_neurons = n_neurons
+            self.hidden_act = self._initializers()["activation"][hidden_act]()
+            self.output_act = self._initializers()["activation"][output_act]()
+            self.loss_func = self._initializers()["loss"][loss_func]()
+            self.learning_rate = learning_rate
+            self.n_epochs = n_epochs
+            self.layers = []
+            self._build()
+        else:
             self._load(from_pretrained)
             return
-        self.n_layers = n_layers
-        self.n_inputs = n_inputs
-        self.n_outputs = n_outputs
-        self.n_neurons = n_neurons
-        self.hidden_act = self._initializers()["activation"][hidden_act]()
-        self.output_act = self._initializers()["activation"][output_act]()
-        self.loss_func = self._initializers()["loss"][loss_func]()
-        self.learning_rate = learning_rate
-        self.n_epochs = n_epochs
-        self.layers = []
-        self._build()
 
-    def fit(self, x: ndarray, y_true: ndarray):
+    def fit(self, x: ndarray, y: ndarray):
         """
         Fit the neural network model to the training data.
         """
         for _ in range(self.n_epochs):
             y_pred = self._forward(x)
-            self.loss_func.forward(y_pred, y_true)
+            self.loss_func.forward(y_pred, y)
             self._backward()
 
     def save(self, name: str):
