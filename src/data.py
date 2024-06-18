@@ -1,13 +1,6 @@
-"""
-This module contains the Data class which is responsible for loading the dataset
-and preprocessing it. The train_test_split function is used to split the dataset
-into training and testing sets.
-"""
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 from numpy import ndarray
-
 
 class Data:
     """
@@ -90,21 +83,32 @@ class Data:
 
 def train_test_split(x: ndarray, y: ndarray, split: float) -> tuple:
     """
-    Split the dataset randomly into training and testing sets.
+    Split the dataset randomly into training and testing sets with stratification,
+    meaning the proportion of positive and negative results stays the same.
     """
     assert 0 < split < 1, "Split ratio must be between 0 and 1."
 
-    indices = np.arange(x.shape[0])
-    np.random.shuffle(indices)
+    unique_classes, class_counts = np.unique(y, return_counts=True)
+    train_indices = []
+    test_indices = []
 
-    x_shuffled = x[indices]
-    y_shuffled = y[indices]
+    for cls, count in zip(unique_classes, class_counts):
+        cls_indices = np.where(y == cls)[0]
+        np.random.shuffle(cls_indices)
+        
+        split_idx = int(count * (1 - split))
+        train_indices.extend(cls_indices[:split_idx])
+        test_indices.extend(cls_indices[split_idx:])
 
-    split_idx = int(x.shape[0] * (1 - split))
+    train_indices = np.array(train_indices)
+    test_indices = np.array(test_indices)
 
-    x_train = x_shuffled[:split_idx]
-    y_train = y_shuffled[:split_idx]
-    x_test = x_shuffled[split_idx:]
-    y_test = y_shuffled[split_idx:]
+    np.random.shuffle(train_indices)
+    np.random.shuffle(test_indices)
+
+    x_train = x[train_indices]
+    y_train = y[train_indices]
+    x_test = x[test_indices]
+    y_test = y[test_indices]
 
     return x_train, y_train, x_test, y_test

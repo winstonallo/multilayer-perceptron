@@ -16,9 +16,9 @@ if __name__ == "__main__":
 
     model = NeuralNetwork(from_pretrained="best")
 
-    y_pred = model.predict(x_test)
+    y_pred = model.predict(data.x)
 
-    performance = ClassificationMetrics(y_pred, y_test)
+    performance = ClassificationMetrics(y_pred, data.y)
     print("Confusion matrix:\n", performance.confusion_matrix())
     print("Precision:", performance.precision())
     print("Recall:", performance.recall())

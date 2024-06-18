@@ -34,7 +34,7 @@ def tune(
     n_layers_opts: list[int] = [2, 3, 4],
     n_neurons_opts: list[int] = [4, 8, 16],
     learning_rate_opts: ndarray = np.arange(0.005, 0.105, 0.005),
-    n_epochs_opts: list[int] = range(100, 200, 10),
+    n_epochs_opts: list[int] = range(150, 250, 10),
 ) -> dict:
     best_loss = float("inf")
     best_params = {}

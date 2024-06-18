@@ -15,7 +15,7 @@ class ClassificationMetrics:
         self._preprocess()
 
     def confusion_matrix(self) -> ndarray:
-        return np.array([[self.true_pos, self.false_pos], [self.true_neg, self.false_neg]])
+        return np.array([[self.true_pos, self.false_pos], [self.false_neg, self.true_neg]])
 
     def precision(self) -> float:
         return self.true_pos / (self.true_pos + self.false_pos)

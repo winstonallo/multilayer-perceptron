@@ -132,8 +132,13 @@ class NeuralNetwork:
         """
         Calculate the accuracy of the predictions.
         """
-        predictions = np.argmax(y_pred, axis=1)
-        targets = np.argmax(y_true, axis=1)
+        if y_pred.shape[1] == 1:  # Binary classification
+            predictions = (y_pred > 0.5).astype(int).flatten()
+            targets = y_true.flatten()
+        else:  # Multi-class classification
+            predictions = np.argmax(y_pred, axis=1)
+            targets = np.argmax(y_true, axis=1)
+    
         accuracy = np.mean(predictions == targets)
         return accuracy
 
