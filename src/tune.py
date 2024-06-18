@@ -47,15 +47,22 @@ def tune(
     ]
 
     with Pool(processes=cpu_count()) as pool:
-        with tqdm(total=len(param_combinations)) as t:
+        with tqdm(
+            total=len(param_combinations),
+            ascii=" =",
+            desc="Tuning Params",  # Adding a description
+            bar_format="{desc}: {percentage:3.0f}%|{bar}|[{remaining}, {rate_fmt}{postfix}]",
+        ) as t:
             for test_loss, params in pool.imap(train_and_evaluate, param_combinations):
-                results.append({
-                    "n_layers": params[0],
-                    "n_neurons": params[1],
-                    "learning_rate": params[2],
-                    "n_epochs": params[3],
-                    "test_loss": test_loss,
-                })
+                results.append(
+                    {
+                        "n_layers": params[0],
+                        "n_neurons": params[1],
+                        "learning_rate": params[2],
+                        "n_epochs": params[3],
+                        "test_loss": test_loss,
+                    }
+                )
 
                 if test_loss < best_loss:
                     best_loss = test_loss
@@ -66,21 +73,18 @@ def tune(
                         "n_epochs": params[3],
                     }
                     model = NeuralNetwork(
-                        n_layers=best_params['n_layers'],
+                        n_layers=best_params["n_layers"],
                         n_inputs=len(x_train[0]),
                         n_outputs=1,
-                        n_neurons=best_params['n_neurons'],
+                        n_neurons=best_params["n_neurons"],
                         hidden_act="ReLU",
                         output_act="Sigmoid",
                         loss_func="BCE",
-                        learning_rate=best_params['learning_rate'],
-                        n_epochs=best_params['n_epochs'],
+                        learning_rate=best_params["learning_rate"],
+                        n_epochs=best_params["n_epochs"],
                     )
                     model.fit(x_train, y_train)
                     model.save("best")
-                    t.set_postfix(
-                        BestLoss=best_loss,
-                    )
 
                 t.update()
 

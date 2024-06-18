@@ -80,7 +80,6 @@ class NeuralNetwork:
         self.layers.append(DenseLayer(self.n_neurons, self.n_outputs, self.learning_rate))
         self.layers.append(self.output_act)
 
-
     def _forward(self, x: ndarray):
         """
         Make a forward pass through the neural network.
