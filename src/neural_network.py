@@ -46,9 +46,11 @@ class NeuralNetwork:
             self.learning_rate = learning_rate
             self.n_epochs = n_epochs
             self.layers = []
+            self.trained = False
             self._build()
         else:
             self._load(from_pretrained)
+            self.trained = True
             return
 
     def fit(self, x: ndarray, y: ndarray):
@@ -59,6 +61,7 @@ class NeuralNetwork:
             y_pred = self._forward(x)
             self.loss_func.forward(y_pred, y)
             self._backward()
+        self.trained = True
 
     def save(self, name: str):
         """
@@ -68,6 +71,13 @@ class NeuralNetwork:
         self._clear_or_create_directory(name)
         architecture = self._get_architecture(name)
         self._save_architecture(name, architecture)
+
+    def predict(self, x: ndarray) -> ndarray:
+        """
+        Make predictions using the trained neural network model.
+        """
+        assert self.trained, "Model has not been trained yet."
+        return self._forward(x)
 
     def _build(self):
         self.layers.append(DenseLayer(self.n_inputs, self.n_neurons, self.learning_rate))

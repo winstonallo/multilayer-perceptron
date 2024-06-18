@@ -7,5 +7,5 @@ def evaluate_model(model: NeuralNetwork, x_test: ndarray, y_test: ndarray) -> fl
     """
     Evaluate the model on the test data and return the loss.
     """
-    y_pred = model._forward(x_test)
+    y_pred = model.predict(x_test)
     return model.loss_func.forward(y_pred, y_test)
