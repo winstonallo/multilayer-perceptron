@@ -1,27 +1,5 @@
-"""
-This module contains the implementation of activation functions
-used in the neural network. Activation functions are used to
-introduce non-linearity to the network, allowing it to learn
-complex patterns in the data.
-
-The following activation functions are implemented:
-    - SigmoidActivation
-    - ReLUActivation
-    - SoftmaxActivation
-
-Notation:
-    - x: inputs (array)
-    - y: output (array)
-    - w: weights (array)
-    - b: biases (array)
-    - n_{x | neurons}: number of {x | neurons}
-    - l: loss
-    - d{1}_d{2}: partial derivative of {1} with respect to {2}
-"""
-
 import numpy as np
 from numpy import ndarray
-
 
 class Activation:
     """
@@ -45,7 +23,10 @@ class Activation:
         raise NotImplementedError()
 
     def __str__(self):
-        raise NotImplementedError
+        """
+        Return the string representation of the activation function.
+        """
+        raise NotImplementedError()
 
 
 class SigmoidActivation(Activation):
@@ -76,12 +57,15 @@ class SigmoidActivation(Activation):
         return dl_dx
 
     def __str__(self):
+        """
+        Return the string representation of the activation function.
+        """
         return "Sigmoid"
 
 
 class ReLUActivation(Activation):
     """
-    Implementation of the ReLu activation function, which captures
+    Implementation of the ReLU activation function, which captures
     non-linearity by setting negative values to 0.
 
     Formula: y = max(0, x)
@@ -106,6 +90,9 @@ class ReLUActivation(Activation):
         return dl_dx
 
     def __str__(self):
+        """
+        Return the string representation of the activation function.
+        """
         return "ReLU"
 
 
@@ -114,7 +101,7 @@ class SoftmaxActivation(Activation):
     Implementation of the Softmax activation function, which is used
     in the output layer of a neural network to produce probabilities
     by ensuring each output is in a (0, 1) range and the sum
-    of all outputs equals to 0.
+    of all outputs equals 1.
 
     Formula: e^x / sum(e^x)
     """
@@ -128,13 +115,11 @@ class SoftmaxActivation(Activation):
         This is VERY important, as mismatched dimensions lead to unrelated values
         being subtracted from the rows.
         """
+        self.x = x
         exponential_values = np.exp(x - np.max(x, axis=1, keepdims=True))
 
         # After getting the exponent for each normalized value, we divide each of them
         # by the sum of all others in their respective row.
-        #
-        # Example, for this array: [x y z]
-        # x = e^x / e^x + e^y + e^z
         probabilities = exponential_values / np.sum(exponential_values, axis=1, keepdims=True)
         self.y = probabilities
 
@@ -144,7 +129,18 @@ class SoftmaxActivation(Activation):
         """
         Calculate the partial derivative of the loss with respect to the inputs.
         """
-        raise NotImplementedError("Softmax backward pass is not implemented.")
+        batch_size, num_classes = self.y.shape
+        dl_dx = np.zeros_like(self.y)
+        
+        for i in range(batch_size):
+            y_i = self.y[i].reshape(-1, 1)
+            jacobian_m = np.diagflat(y_i) - np.dot(y_i, y_i.T)
+            dl_dx[i] = np.dot(jacobian_m, dl_dy[i])
+
+        return dl_dx
 
     def __str__(self):
+        """
+        Return the string representation of the activation function.
+        """
         return "Softmax"

@@ -104,7 +104,7 @@ class NeuralNetwork:
         self.layers.append(DenseLayer(self.n_inputs, self.n_neurons, self.learning_rate))
         self.layers.append(self.hidden_act)
 
-        for _ in range(self.n_layers - 2):
+        for i in range(self.n_layers - 2):
             self.layers.append(DenseLayer(self.n_neurons, self.n_neurons, self.learning_rate))
             self.layers.append(self.hidden_act)
 
@@ -132,10 +132,10 @@ class NeuralNetwork:
         """
         Calculate the accuracy of the predictions.
         """
-        if y_pred.shape[1] == 1:  # Binary classification
+        if y_pred.shape[1] == 1:
             predictions = (y_pred > 0.5).astype(int).flatten()
             targets = y_true.flatten()
-        else:  # Multi-class classification
+        else:
             predictions = np.argmax(y_pred, axis=1)
             targets = np.argmax(y_true, axis=1)
     
