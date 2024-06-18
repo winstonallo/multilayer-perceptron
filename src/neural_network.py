@@ -1,11 +1,3 @@
-"""
-This module contains the implementation of a neural network. The neural network 
-is currently limited to the following configurations:
-- Layers: DenseLayer
-- Activation functions: ReLUActivation, SigmoidActivation, SoftmaxActivation
-- Loss functions: BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
-"""
-
 import numpy as np
 from numpy import ndarray
 from dense_layer import DenseLayer
@@ -14,6 +6,7 @@ from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
 import os
 import json
 import shutil
+import matplotlib.pyplot as plt
 
 
 class NeuralNetwork:
@@ -46,6 +39,8 @@ class NeuralNetwork:
             self.learning_rate = learning_rate
             self.n_epochs = n_epochs
             self.layers = []
+            self.loss_history = []
+            self.accuracy_history = []
             self.trained = False
             self._build()
         else:
@@ -57,9 +52,12 @@ class NeuralNetwork:
         """
         Fit the neural network model to the training data.
         """
-        for _ in range(self.n_epochs):
+        for epoch in range(self.n_epochs):
             y_pred = self._forward(x)
-            self.loss_func.forward(y_pred, y)
+            loss = self.loss_func.forward(y_pred, y)
+            self.loss_history.append(loss)
+            accuracy = self._calculate_accuracy(y_pred, y)
+            self.accuracy_history.append(accuracy)
             self._backward()
         self.trained = True
 
@@ -71,6 +69,7 @@ class NeuralNetwork:
         self._clear_or_create_directory(name)
         architecture = self._get_architecture(name)
         self._save_architecture(name, architecture)
+        self._save_metrics(name)
 
     def predict(self, x: ndarray) -> ndarray:
         """
@@ -78,6 +77,28 @@ class NeuralNetwork:
         """
         assert self.trained, "Model has not been trained yet."
         return self._forward(x)
+
+    def plot_metrics(self):
+        """
+        Plot the loss and accuracy over epochs.
+        """
+        plt.figure(figsize=(12, 5))
+
+        plt.subplot(1, 2, 1)
+        plt.plot(self.loss_history, label="Loss")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.title("Loss Over Epochs")
+        plt.legend()
+
+        plt.subplot(1, 2, 2)
+        plt.plot(self.accuracy_history, label="Accuracy")
+        plt.xlabel("Epoch")
+        plt.ylabel("Accuracy")
+        plt.title("Accuracy Over Epochs")
+        plt.legend()
+
+        plt.show()
 
     def _build(self):
         self.layers.append(DenseLayer(self.n_inputs, self.n_neurons, self.learning_rate))
@@ -107,8 +128,18 @@ class NeuralNetwork:
         for layer in reversed(self.layers):
             dl_dy = layer.backward(dl_dy)
 
+    def _calculate_accuracy(self, y_pred: ndarray, y_true: ndarray) -> float:
+        """
+        Calculate the accuracy of the predictions.
+        """
+        predictions = np.argmax(y_pred, axis=1)
+        targets = np.argmax(y_true, axis=1)
+        accuracy = np.mean(predictions == targets)
+        return accuracy
+
     def _load(self, name: str):
         architecture = self._load_architecture(name)
+        self._load_metrics(name)
 
         self.layers = []
         for i, layer_info in enumerate(architecture):
@@ -150,6 +181,18 @@ class NeuralNetwork:
     def _save_architecture(self, name: str, architecture: list[dict]):
         with open(os.path.join(name, "architecture.json"), "w") as f:
             json.dump(architecture, f, indent=4)
+
+    def _save_metrics(self, name: str):
+        with open(os.path.join(name, "loss_history.json"), "w") as f:
+            json.dump(self.loss_history, f, indent=4)
+        with open(os.path.join(name, "accuracy_history.json"), "w") as f:
+            json.dump(self.accuracy_history, f, indent=4)
+
+    def _load_metrics(self, name: str):
+        with open(os.path.join(name, "loss_history.json"), "r") as f:
+            self.loss_history = json.load(f)
+        with open(os.path.join(name, "accuracy_history.json"), "r") as f:
+            self.accuracy_history = json.load(f)
 
     def _clear_or_create_directory(self, name: str):
         if os.path.exists(name):

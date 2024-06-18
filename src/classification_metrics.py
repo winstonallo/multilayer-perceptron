@@ -3,7 +3,7 @@ from numpy import ndarray
 
 
 class ClassificationMetrics:
-    
+
     def __init__(self, y_true: ndarray, y_pred: ndarray):
         self.y_true = y_true
         self.y_pred = y_pred
@@ -22,7 +22,7 @@ class ClassificationMetrics:
 
     def recall(self) -> float:
         return self.true_pos / (self.true_pos + self.false_neg)
-    
+
     def f1(self) -> float:
         return 2 * (self.precision() * self.recall() / (self.precision() + self.recall()))
 
