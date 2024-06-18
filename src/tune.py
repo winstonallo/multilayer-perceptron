@@ -50,7 +50,7 @@ def tune(
         with tqdm(
             total=len(param_combinations),
             ascii=" =",
-            desc="Tuning Params",  # Adding a description
+            desc="Tuning Params",
             bar_format="{desc}: {percentage:3.0f}%|{bar}|[{remaining}, {rate_fmt}{postfix}]",
         ) as t:
             for test_loss, params in pool.imap(train_and_evaluate, param_combinations):
