@@ -8,15 +8,32 @@ class Data:
     """
 
     def __init__(self, csv_path: str, drop_columns: list[str] = None) -> None:
-        self.df = pd.read_csv(csv_path, header=None)
+        self.df = self._load_csv(csv_path)
         self._preprocess(drop_columns)
+
+    def _load_csv(self, csv_path: str) -> pd.DataFrame:
+        """
+        Load CSV file and handle potential errors.
+        """
+        try:
+            df = pd.read_csv(csv_path, header=None)
+            print("CSV file loaded successfully.")
+            return df
+        except FileNotFoundError:
+            print(f"File not found: {csv_path}")
+            raise
+        except pd.errors.EmptyDataError:
+            print("No data: CSV file is empty.")
+            raise
+        except pd.errors.ParserError:
+            print("Error parsing CSV file.")
+            raise
 
     def _preprocess(self, drop_columns: list[str]) -> None:
         """
         Preprocess the dataset by converting categorical data into numerical,
         and scaling the features and splitting the dataset into input and target.
         """
-
         self._add_columns()
 
         if drop_columns:
@@ -26,10 +43,20 @@ class Data:
 
         self.df = self.df.fillna(self.df.mean())
 
+        self._handle_missing_values()
         self._scale_features()
 
         self.x = self.df.drop("diagnosis", axis=1).to_numpy()
         self.y = self.df["diagnosis"].to_numpy().reshape(-1, 1)
+
+    def _handle_missing_values(self) -> None:
+        """
+        Impute missing values using a more sophisticated approach.
+        """
+        for column in self.df.columns:
+            if self.df[column].isnull().any():
+                self.df[column].fillna(self.df[column].mean(), inplace=True)
+        print("Missing values imputed.")
 
     def _scale_features(self) -> None:
         """
@@ -37,7 +64,12 @@ class Data:
         """
         for column in self.df.columns:
             if column != "diagnosis":
-                self.df[column] = (self.df[column] - self.df[column].mean()) / self.df[column].std()
+                std = self.df[column].std()
+                if std != 0:
+                    self.df[column] = (self.df[column] - self.df[column].mean()) / std
+                else:
+                    self.df[column] = 0
+        print("Features scaled.")
 
     def _add_columns(self) -> None:
         """
@@ -79,7 +111,7 @@ class Data:
         ]
 
         self.df.columns = columns
-
+        print("Columns added.")
 
 def train_test_split(x: ndarray, y: ndarray, split: float) -> tuple:
     """
@@ -95,7 +127,7 @@ def train_test_split(x: ndarray, y: ndarray, split: float) -> tuple:
     for cls, count in zip(unique_classes, class_counts):
         cls_indices = np.where(y == cls)[0]
         np.random.shuffle(cls_indices)
-        
+
         split_idx = int(count * (1 - split))
         train_indices.extend(cls_indices[:split_idx])
         test_indices.extend(cls_indices[split_idx:])
@@ -110,5 +142,7 @@ def train_test_split(x: ndarray, y: ndarray, split: float) -> tuple:
     y_train = y[train_indices]
     x_test = x[test_indices]
     y_test = y[test_indices]
+
+    print("Data split into train and test sets.")
 
     return x_train, y_train, x_test, y_test
