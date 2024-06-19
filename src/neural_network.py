@@ -52,7 +52,7 @@ class NeuralNetwork:
         """
         Fit the neural network model to the training data.
         """
-        for epoch in range(self.n_epochs):
+        for _ in range(self.n_epochs):
             y_pred = self._forward(x)
             loss = self.loss_func.forward(y_pred, y)
             self.loss_history.append(loss)
@@ -78,27 +78,11 @@ class NeuralNetwork:
         assert self.trained, "Model has not been trained yet."
         return self._forward(x)
 
-    def plot_metrics(self):
+    def training_metrics(self):
         """
         Plot the loss and accuracy over epochs.
         """
-        plt.figure(figsize=(12, 5))
-
-        plt.subplot(1, 2, 1)
-        plt.plot(self.loss_history, label="Loss")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.title("Loss Over Epochs")
-        plt.legend()
-
-        plt.subplot(1, 2, 2)
-        plt.plot(self.accuracy_history, label="Accuracy")
-        plt.xlabel("Epoch")
-        plt.ylabel("Accuracy")
-        plt.title("Accuracy Over Epochs")
-        plt.legend()
-
-        plt.show()
+        return self.loss_history, self.accuracy_history
 
     def _build(self):
         self.layers.append(DenseLayer(self.n_inputs, self.n_neurons, self.learning_rate))
