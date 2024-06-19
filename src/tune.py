@@ -29,7 +29,7 @@ def tune(
     y_train: ndarray,
     x_test: ndarray,
     y_test: ndarray,
-    save_path = "best",
+    save_path="best",
     n_layers_opts: list[int] = [2, 3, 4],
     n_neurons_opts: list[int] = [4, 8, 16],
     learning_rate_opts: ndarray = np.arange(0.005, 0.105, 0.005),

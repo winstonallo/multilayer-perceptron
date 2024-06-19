@@ -47,7 +47,7 @@ class NeuralNetwork:
             self.trained = True
             return
 
-    def fit(self, x: ndarray, y: ndarray, show_training_output: bool=False):
+    def fit(self, x: ndarray, y: ndarray, show_training_output: bool = False):
         """
         Fit the neural network model to the training data.
         """

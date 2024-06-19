@@ -34,7 +34,9 @@ class CommandLineInterface:
         print("Recall:", performance.recall())
         print("F1:", performance.f1())
 
-        plot_combined_metrics(self.data.y, y_pred, cm, model.loss_history, model.accuracy_history, ["Negative", "Positive"])
+        plot_combined_metrics(
+            self.data.y, y_pred, cm, model.loss_history, model.accuracy_history, ["Negative", "Positive"]
+        )
 
     def _from_pretrained(self):
         if not os.path.isdir(self.args.from_pretrained):
@@ -51,29 +53,37 @@ class CommandLineInterface:
         return model
 
     def _custom_params(self):
-        if not (self.args.neurons and self.args.layers and self.args.outputs and self.args.learning_rate and self.args.epochs):
+        if not (
+            self.args.neurons
+            and self.args.layers
+            and self.args.outputs
+            and self.args.learning_rate
+            and self.args.epochs
+        ):
             self.parser.error(
                 "--neurons, --layers, --outputs, --learning-rate, and --epochs must be specified with --custom-parameters"
             )
         model = NeuralNetwork(
-            n_inputs=self.x_train.shape[1], 
-            n_outputs=self.args.outputs, 
-            n_neurons=self.args.neurons, 
-            n_layers=self.args.layers, 
-            learning_rate=self.args.learning_rate, 
-            n_epochs=self.args.epochs
+            n_inputs=self.x_train.shape[1],
+            n_outputs=self.args.outputs,
+            n_neurons=self.args.neurons,
+            n_layers=self.args.layers,
+            learning_rate=self.args.learning_rate,
+            n_epochs=self.args.epochs,
         )
         model.fit(self.x_train, self.y_train, show_training_output=True)
-        print(f"Model trained with user-defined parameters:\n - Neurons: {self.args.neurons}\n - Layers: {self.args.layers}\n - Outputs: {self.args.outputs}\n - Learning Rate: {self.args.learning_rate}\n - Epochs: {self.args.epochs}")
+        print(
+            f"Model trained with user-defined parameters:\n - Neurons: {self.args.neurons}\n - Layers: {self.args.layers}\n - Outputs: {self.args.outputs}\n - Learning Rate: {self.args.learning_rate}\n - Epochs: {self.args.epochs}"
+        )
         return model
 
     def _get_parser(self) -> argparse.ArgumentParser:
         return argparse.ArgumentParser(
-        prog="multilayer-perceptron",
-        description="This package allows easy customization, training, and performance evaluation of lightweight classification models.",
-        epilog="Author: Arthur Bied-Charreton",
-        formatter_class=argparse.RawTextHelpFormatter,
-    )
+            prog="multilayer-perceptron",
+            description="This package allows easy customization, training, and performance evaluation of lightweight classification models.",
+            epilog="Author: Arthur Bied-Charreton",
+            formatter_class=argparse.RawTextHelpFormatter,
+        )
 
     def _get_chosen_option(self):
         for option in ["from_pretrained", "tuned_parameters", "custom_parameters"]:
@@ -94,7 +104,9 @@ class CommandLineInterface:
         self.parser.add_argument(
             "-n", "--neurons", metavar="<int>", help="neurons count for hidden layers", action="store", type=int
         )
-        self.parser.add_argument("-l", "--layers", metavar="<int>", help="number of dense layers", action="store", type=int)
+        self.parser.add_argument(
+            "-l", "--layers", metavar="<int>", help="number of dense layers", action="store", type=int
+        )
         self.parser.add_argument(
             "-o",
             "--outputs",
@@ -104,9 +116,16 @@ class CommandLineInterface:
             type=int,
         )
         self.parser.add_argument(
-            "-r", "--learning-rate", metavar="<float>", help="learning rate for model training", action="store", type=float
+            "-r",
+            "--learning-rate",
+            metavar="<float>",
+            help="learning rate for model training",
+            action="store",
+            type=float,
         )
-        self.parser.add_argument("-e", "--epochs", metavar="<int>", help="number of training iterations", action="store", type=int)
+        self.parser.add_argument(
+            "-e", "--epochs", metavar="<int>", help="number of training iterations", action="store", type=int
+        )
 
         self.parser.add_argument(
             "-s",

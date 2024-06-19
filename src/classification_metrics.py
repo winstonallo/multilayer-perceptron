@@ -41,7 +41,4 @@ class ClassificationMetrics:
         return 2 * (prec * rec) / denominator
 
     def confusion_matrix(self) -> np.ndarray:
-        return np.array([
-            [self.true_neg, self.false_pos],
-            [self.false_neg, self.true_pos]
-        ])
+        return np.array([[self.true_neg, self.false_pos], [self.false_neg, self.true_pos]])
