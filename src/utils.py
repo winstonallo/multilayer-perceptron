@@ -1,4 +1,4 @@
-from neural_network import NeuralNetwork
+from src.neural_network import NeuralNetwork
 import numpy as np
 from numpy import ndarray
 import matplotlib.pyplot as plt

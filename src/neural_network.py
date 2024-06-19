@@ -1,12 +1,11 @@
-import numpy as np
 from numpy import ndarray
-from dense_layer import DenseLayer
-from activation import SigmoidActivation, ReLUActivation, SoftmaxActivation
-from loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
+from src.dense_layer import DenseLayer
+from src.activation import SigmoidActivation, ReLUActivation, SoftmaxActivation
+from src.loss import BinaryCrossEntropyLoss, CategoricalCrossEntropyLoss
+import numpy as np
 import os
 import json
 import shutil
-import matplotlib.pyplot as plt
 
 
 class NeuralNetwork:

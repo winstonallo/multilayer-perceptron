@@ -1,8 +1,8 @@
 import numpy as np
 from numpy import ndarray
 from multiprocessing import Pool, cpu_count
-from neural_network import NeuralNetwork
-from utils import evaluate_model
+from src.neural_network import NeuralNetwork
+from src.utils import evaluate_model
 from tqdm import tqdm
 
 
