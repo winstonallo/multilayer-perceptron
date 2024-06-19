@@ -121,7 +121,7 @@ class NeuralNetwork:
         else:
             predictions = np.argmax(y_pred, axis=1)
             targets = np.argmax(y_true, axis=1)
-    
+
         accuracy = np.mean(predictions == targets)
         return accuracy
 

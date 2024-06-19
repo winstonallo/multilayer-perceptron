@@ -5,4 +5,3 @@ PyQt5==5.15.10
 pandas==2.2.2
 seaborn==0.13.2
 tqdm==4.66.4
-simple_term_menu==1.6.4

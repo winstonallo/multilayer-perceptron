@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import ndarray
 
+
 class Activation:
     """
     An abstract class for activation functions.
@@ -131,7 +132,7 @@ class SoftmaxActivation(Activation):
         """
         batch_size, num_classes = self.y.shape
         dl_dx = np.zeros_like(self.y)
-        
+
         for i in range(batch_size):
             y_i = self.y[i].reshape(-1, 1)
             jacobian_m = np.diagflat(y_i) - np.dot(y_i, y_i.T)

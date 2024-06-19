@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from numpy import ndarray
 
+
 class Data:
     """
     A class to load and preprocess the dataset.
@@ -112,6 +113,7 @@ class Data:
 
         self.df.columns = columns
         print("Columns added.")
+
 
 def train_test_split(x: ndarray, y: ndarray, split: float) -> tuple:
     """
