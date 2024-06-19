@@ -7,8 +7,7 @@ from tqdm import tqdm
 
 
 def train_and_evaluate(params):
-    n_layers, n_neurons, learning_rate, n_epochs, x_train, y_train, x_test, y_test, seed = params
-    np.random.seed(seed)
+    n_layers, n_neurons, learning_rate, n_epochs, x_train, y_train, x_test, y_test = params
     model = NeuralNetwork(
         n_layers=n_layers,
         n_inputs=len(x_train[0]),
@@ -30,7 +29,7 @@ def tune(
     y_train: ndarray,
     x_test: ndarray,
     y_test: ndarray,
-    seed,
+    save_path = "best",
     n_layers_opts: list[int] = [2, 3, 4],
     n_neurons_opts: list[int] = [4, 8, 16],
     learning_rate_opts: ndarray = np.arange(0.005, 0.105, 0.005),
@@ -41,7 +40,7 @@ def tune(
     results = []
 
     param_combinations = [
-        (n_layers, n_neurons, learning_rate, n_epochs, x_train, y_train, x_test, y_test, seed)
+        (n_layers, n_neurons, learning_rate, n_epochs, x_train, y_train, x_test, y_test)
         for n_layers in n_layers_opts
         for n_neurons in n_neurons_opts
         for learning_rate in learning_rate_opts

@@ -20,16 +20,28 @@ class ClassificationMetrics:
 
         self.total_error_count = self.false_neg + self.false_pos
 
-    def confusion_matrix(self):
-        return np.array([[self.true_neg, self.false_pos], [self.false_neg, self.true_pos]])
+    def precision(self) -> float:
+        denominator = self.true_pos + self.false_pos
+        if denominator == 0:
+            return 0.0
+        return self.true_pos / denominator
 
-    def precision(self):
-        return self.true_pos / (self.true_pos + self.false_pos)
+    def recall(self) -> float:
+        denominator = self.true_pos + self.false_neg
+        if denominator == 0:
+            return 0.0
+        return self.true_pos / denominator
 
-    def recall(self):
-        return self.true_pos / (self.true_pos + self.false_neg)
+    def f1(self) -> float:
+        prec = self.precision()
+        rec = self.recall()
+        denominator = prec + rec
+        if denominator == 0:
+            return 0.0
+        return 2 * (prec * rec) / denominator
 
-    def f1(self):
-        precision = self.precision()
-        recall = self.recall()
-        return 2 * (precision * recall) / (precision + recall)
+    def confusion_matrix(self) -> np.ndarray:
+        return np.array([
+            [self.true_neg, self.false_pos],
+            [self.false_neg, self.true_pos]
+        ])

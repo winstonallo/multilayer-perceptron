@@ -54,6 +54,7 @@ class NeuralNetwork:
         for _ in range(self.n_epochs):
             y_pred = self._forward(x)
             loss = self.loss_func.forward(y_pred, y)
+            print(f"Loss: {loss}")
             self.loss_history.append(loss)
             accuracy = self._calculate_accuracy(y_pred, y)
             self.accuracy_history.append(accuracy)
