@@ -16,7 +16,7 @@ class NeuralNetwork:
     def __init__(
         self,
         n_inputs: int = 0,
-        n_outputs: int = 0,
+        n_outputs: int = 1,
         n_layers: int = 2,
         n_neurons: int = 3,
         hidden_act: str = "ReLU",

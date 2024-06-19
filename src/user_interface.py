@@ -54,16 +54,14 @@ class CommandLineInterface:
         if not (
             self.args.neurons
             and self.args.layers
-            and self.args.outputs
             and self.args.learning_rate
             and self.args.epochs
         ):
             self.parser.error(
-                "--neurons, --layers, --outputs, --learning-rate, and --epochs must be specified with --custom-parameters"
+                "--neurons, --layers, --learning-rate, and --epochs must be specified with --custom-parameters"
             )
         model = NeuralNetwork(
             n_inputs=self.x_train.shape[1],
-            n_outputs=self.args.outputs,
             n_neurons=self.args.neurons,
             n_layers=self.args.layers,
             learning_rate=self.args.learning_rate,
@@ -71,7 +69,7 @@ class CommandLineInterface:
         )
         model.fit(self.x_train, self.y_train, show_training_output=True)
         print(
-            f"Model trained with user-defined parameters:\n - Neurons: {self.args.neurons}\n - Layers: {self.args.layers}\n - Outputs: {self.args.outputs}\n - Learning Rate: {self.args.learning_rate}\n - Epochs: {self.args.epochs}"
+            f"Model trained with user-defined parameters:\n - Neurons: {self.args.neurons}\n - Layers: {self.args.layers}\n - Learning Rate: {self.args.learning_rate}\n - Epochs: {self.args.epochs}"
         )
         return model
 
@@ -106,14 +104,6 @@ class CommandLineInterface:
             "-l", "--layers", metavar="<int>", help="number of dense layers", action="store", type=int
         )
         self.parser.add_argument(
-            "-o",
-            "--outputs",
-            metavar="<int>",
-            help="number of neurons in the output layer. use '--outputs 1' for binary classification",
-            action="store",
-            type=int,
-        )
-        self.parser.add_argument(
             "-r",
             "--learning-rate",
             metavar="<float>",
@@ -136,9 +126,9 @@ class CommandLineInterface:
 
     def _validate_args(self):
         if (self.args.from_pretrained or self.args.tuned_parameters) and (
-            self.args.neurons or self.args.layers or self.args.outputs or self.args.learning_rate or self.args.epochs
+            self.args.neurons or self.args.layers or self.args.learning_rate or self.args.epochs
         ):
-            self.parser.error("--neurons, --layers, --outputs and --epochs are only valid with --custom-params")
+            self.parser.error("--neurons, --layers, and --epochs are only valid with --custom-params")
 
     def _validate_input_file(self, filename: str):
         if not os.path.isfile(filename):
