@@ -62,7 +62,7 @@ class NeuralNetwork:
             self._backward()
         self.trained = True
 
-    def save(self, name: str):
+    def save(self, name: str, output = True):
         """
         Save the trained model to ./{name}/. This allows you to later load
         the model for further use.
@@ -71,7 +71,8 @@ class NeuralNetwork:
         architecture = self._get_architecture(name)
         self._save_architecture(name, architecture)
         self._save_metrics(name)
-        print(f"Model successfully saved to './{name}'")
+        if output:
+            print(f"Model successfully saved to './{name}'")
 
     def predict(self, x: ndarray) -> ndarray:
         """

@@ -90,7 +90,7 @@ def plot_combined_metrics(
     """
     Combine multiple plots into a single fullscreen plot.
     """
-    combined_fig, axes = plt.subplots(2, 2, figsize=(16, 9))
+    combined_fig, axes = plt.subplots(2, 2, figsize=(12, 9))
     combined_fig.suptitle("Model Performance Metrics", fontsize=20)
 
     plot_prediction_histogram(axes[0, 0], y_true, y_pred, threshold)

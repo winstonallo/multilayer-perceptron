@@ -28,8 +28,6 @@ class CommandLineInterface:
 
         performance = ClassificationMetrics(y_pred, self.data.y)
         cm = performance.confusion_matrix()
-        print("Confusion matrix:\n", cm)
-
         print("Precision:", performance.precision())
         print("Recall:", performance.recall())
         print("F1:", performance.f1())
