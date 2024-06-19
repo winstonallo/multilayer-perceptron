@@ -47,17 +47,18 @@ class NeuralNetwork:
             self.trained = True
             return
 
-    def fit(self, x: ndarray, y: ndarray):
+    def fit(self, x: ndarray, y: ndarray, show_training_output: bool=False):
         """
         Fit the neural network model to the training data.
         """
-        for _ in range(self.n_epochs):
+        for epoch in range(self.n_epochs):
             y_pred = self._forward(x)
             loss = self.loss_func.forward(y_pred, y)
-            print(f"Loss: {loss}")
             self.loss_history.append(loss)
             accuracy = self._calculate_accuracy(y_pred, y)
             self.accuracy_history.append(accuracy)
+            if show_training_output:
+                print(f"Epoch {epoch}, Loss: {loss}, Accuracy: {accuracy}")
             self._backward()
         self.trained = True
 
