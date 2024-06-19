@@ -62,7 +62,7 @@ class NeuralNetwork:
             self._backward()
         self.trained = True
 
-    def save(self, name: str, output = True):
+    def save(self, name: str, output=True):
         """
         Save the trained model to ./{name}/. This allows you to later load
         the model for further use.
