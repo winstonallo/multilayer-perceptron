@@ -57,7 +57,7 @@ class NeuralNetwork:
             self.loss_history.append(loss)
             accuracy = self._calculate_accuracy(y_pred, y)
             self.accuracy_history.append(accuracy)
-            if show_training_output:
+            if show_training_output and epoch % 20 == 0:
                 print(f"Epoch {epoch}, Loss: {loss}, Accuracy: {accuracy}")
             self._backward()
         self.trained = True
@@ -71,6 +71,7 @@ class NeuralNetwork:
         architecture = self._get_architecture(name)
         self._save_architecture(name, architecture)
         self._save_metrics(name)
+        print(f"Model successfully saved to './{name}'")
 
     def predict(self, x: ndarray) -> ndarray:
         """
