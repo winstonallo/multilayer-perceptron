@@ -3,7 +3,6 @@ from src.neural_network import NeuralNetwork
 from src.tune import tune
 from src.classification_metrics import ClassificationMetrics
 from src.utils import plot_combined_metrics
-from simple_term_menu import TerminalMenu
 import sys
 import os
 import argparse
@@ -79,7 +78,7 @@ def main():
         elif args.tuned_parameters:
             best_params, results = tune(x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)
             model = NeuralNetwork(n_inputs=x_train.shape[1], n_outputs=y_train.shape[1], **best_params)
-            model.fit(x_train, y_train)
+            model.fit(x_train, y_train, show_training_output=True)
             print("Model trained")
         elif args.custom_parameters:
             if not (args.neurons and args.layers and args.outputs and args.learning_rate and args.epochs):
@@ -94,7 +93,7 @@ def main():
                 learning_rate=args.learning_rate, 
                 n_epochs=args.epochs
             )
-            model.fit(x_train, y_train)
+            model.fit(x_train, y_train, show_training_output=True)
             print("Model trained")
         else:
             raise ValueError("Invalid argument combination")
@@ -107,7 +106,7 @@ def main():
         print("Recall:", performance.recall())
         print("F1:", performance.f1())
 
-        # plot_combined_metrics(data.y, y_pred, cm, model.loss_history, model.accuracy_history, ["Negative", "Positive"])
+        plot_combined_metrics(data.y, y_pred, cm, model.loss_history, model.accuracy_history, ["Negative", "Positive"])
     except Exception as e:
         print(f"Error: {e}")
     
